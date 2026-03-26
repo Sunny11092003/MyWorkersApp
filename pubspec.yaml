@@ -62,6 +62,9 @@ flutter:
   assets:
     - assets\images\ac_repair.jpg
     - assets\images\deep_cleaning.jpg
+    - assets\images\move_clean.png
+    - assets\images\quick_clean.webp
+    - assets\images\eco_frndly_clean.webp
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

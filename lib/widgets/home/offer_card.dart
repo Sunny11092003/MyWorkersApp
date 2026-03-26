@@ -68,7 +68,6 @@ class OfferCard extends StatelessWidget {
             ],
           ),
         ),
-        // Light blue circle on the right
         Positioned(
           top: -20,
           right: -30,
@@ -77,10 +76,10 @@ class OfferCard extends StatelessWidget {
             height: 140,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFFBBDEFB).withOpacity(0.4),
+              color: const Color(0xFFBBDEFB).withValues(alpha: 0.2), // softer
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFFBBDEFB).withOpacity(0.3),
+                  color: const Color(0xFFBBDEFB).withValues(alpha: 0.15),
                   blurRadius: 25,
                   spreadRadius: 3,
                 ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:my_workers_app/screens/services_screen.dart';
 import 'category_item.dart';
 
 class CategoriesSection extends StatelessWidget {
@@ -54,7 +55,17 @@ class CategoriesSection extends StatelessWidget {
                 title: 'Cleaning',
                 icon: Icons.cleaning_services,
                 backgroundColor: Colors.green[100]!,
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ServicesScreen(
+                        categoryName: 'Home Cleaning',
+                        categoryId: 'cleaning',
+                      ),
+                    ),
+                  );
+                },
               ),
               CategoryItem(
                 title: 'Electrical',

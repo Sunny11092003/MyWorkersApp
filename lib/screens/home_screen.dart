@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../widgets/welcome_header.dart';
-import '../widgets/search_bar.dart';
-import '../widgets/offer_card.dart';
-import '../widgets/categories_section.dart';
-import '../widgets/service_card.dart';
-import '../widgets/tracking_card.dart';
+import '../widgets/home/welcome_header.dart';
+import '../widgets/home/search_bar.dart';
+import '../widgets/home/offer_card.dart';
+import '../widgets/home/categories_section.dart';
+import '../widgets/home/service_card.dart';
+import '../widgets/home/tracking_card.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
