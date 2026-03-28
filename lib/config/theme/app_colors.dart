@@ -64,4 +64,51 @@ class AppColors {
     Colors.transparent,
     Color(0x80000000),
   ];
+
+  // ── Premium / gradient additions ─────────────────────────────────────────
+
+  /// Lighter tint of primary for gradient end-stops.
+  static const Color primaryLight = Color(0xFF8B8FFF);
+
+  /// Purple accent used as the far end of the primary gradient.
+  static const Color gradientEnd = Color(0xFF9B5FFF);
+
+  /// Semi-transparent white for glass-morphism overlays.
+  static const Color glassWhite = Color(0xCCFFFFFF);
+
+  /// Gold color used for the PREMIUM service badge.
+  static const Color premiumBadgeColor = Color(0xFFFFB800);
+
+  /// Emerald green used for the RECOMMENDED payment badge.
+  static const Color recommendedBadgeColor = Color(0xFF10B981);
+
+  // Primary gradient (left → right) used on buttons and selected states.
+  static const List<Color> primaryGradientColors = [
+    Color(0xFF5B5FFF),
+    Color(0xFF9B5FFF),
+  ];
+
+  // Dark navy gradient used on the price-summary card.
+  static const List<Color> darkGradientColors = [
+    Color(0xFF1A1E3F),
+    Color(0xFF2D335F),
+  ];
+
+  // Success gradient for the confirmed-booking icon.
+  static const List<Color> successGradientColors = [
+    Color(0xFF10B981),
+    Color(0xFF059669),
+  ];
+
+  // Gold gradient used on the price-summary total value.
+  static const List<Color> goldGradientColors = [
+    Color(0xFFFFD700),
+    Color(0xFFFFA500),
+  ];
+
+  /// Light emerald used for discount values on dark backgrounds.
+  static const Color discountLight = Color(0xFF6EE7B7);
+
+  /// Checkout screen scaffold background (very light lavender tint).
+  static const Color checkoutScaffoldBg = Color(0xFFF8F9FF);
 }

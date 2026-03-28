@@ -5,8 +5,8 @@ import '../../../../core/constants/app_constants.dart';
 
 /// A card representing a single date slot in the schedule picker.
 ///
-/// Shows the day-of-week and date number. Highlights when [isSelected] is
-/// true using the primary brand color.
+/// When [isSelected] the card shows a gradient background with a shadow for
+/// a premium elevated look; otherwise it uses the neutral surface colour.
 class DateSlotCard extends StatelessWidget {
   const DateSlotCard({
     super.key,
@@ -26,15 +26,32 @@ class DateSlotCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        width: 52,
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeInOut,
+        width: 56,
         padding: const EdgeInsets.symmetric(
           vertical: AppConstants.paddingM,
           horizontal: AppConstants.paddingS,
         ),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : AppColors.checkoutUnselectedSlot,
+          gradient: isSelected
+              ? const LinearGradient(
+                  colors: AppColors.primaryGradientColors,
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                )
+              : null,
+          color: isSelected ? null : AppColors.checkoutUnselectedSlot,
           borderRadius: BorderRadius.circular(AppConstants.radiusM),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.35),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : [],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,

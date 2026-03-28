@@ -4,6 +4,7 @@ import '../../../../config/theme/app_text_styles.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_strings.dart';
 import 'payment_option_card.dart';
+import 'premium_section_header.dart';
 
 /// Section listing available payment methods for the checkout.
 ///
@@ -23,42 +24,29 @@ class PaymentMethodSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        PremiumSectionHeader(
           AppStrings.checkoutPaymentMethod,
-          style: AppTextStyles.checkoutSectionTitle,
+          icon: Icons.payment,
         ),
         const SizedBox(height: AppConstants.paddingM),
         PaymentOptionCard(
-          icon: Container(
-            padding: const EdgeInsets.all(AppConstants.paddingS),
-            decoration: BoxDecoration(
-              color: AppColors.checkoutAddressIcon,
-              borderRadius: BorderRadius.circular(AppConstants.radiusS),
-            ),
-            child: const Icon(
-              Icons.credit_card,
-              color: AppColors.primary,
-              size: AppConstants.iconM,
-            ),
+          icon: _PaymentIcon(
+            bgColor: AppColors.checkoutAddressIcon,
+            icon: Icons.credit_card_rounded,
+            iconColor: AppColors.primary,
           ),
           title: AppStrings.checkoutPaymentCard,
           subtitle: AppStrings.checkoutPaymentCardDetail,
           isSelected: selectedIndex == 0,
+          isRecommended: true,
           onTap: () => onPaymentSelected(0),
         ),
         const SizedBox(height: AppConstants.paddingS),
         PaymentOptionCard(
-          icon: Container(
-            padding: const EdgeInsets.all(AppConstants.paddingS),
-            decoration: BoxDecoration(
-              color: AppColors.paymentCashBg,
-              borderRadius: BorderRadius.circular(AppConstants.radiusS),
-            ),
-            child: const Icon(
-              Icons.payments_outlined,
-              color: AppColors.paymentCashIcon,
-              size: AppConstants.iconM,
-            ),
+          icon: _PaymentIcon(
+            bgColor: AppColors.paymentCashBg,
+            icon: Icons.payments_rounded,
+            iconColor: AppColors.paymentCashIcon,
           ),
           title: AppStrings.checkoutPaymentCash,
           subtitle: '',
@@ -67,17 +55,10 @@ class PaymentMethodSection extends StatelessWidget {
         ),
         const SizedBox(height: AppConstants.paddingS),
         PaymentOptionCard(
-          icon: Container(
-            padding: const EdgeInsets.all(AppConstants.paddingS),
-            decoration: BoxDecoration(
-              color: AppColors.paymentWalletBg,
-              borderRadius: BorderRadius.circular(AppConstants.radiusS),
-            ),
-            child: const Icon(
-              Icons.account_balance_wallet_outlined,
-              color: AppColors.paymentWalletIcon,
-              size: AppConstants.iconM,
-            ),
+          icon: _PaymentIcon(
+            bgColor: AppColors.paymentWalletBg,
+            icon: Icons.account_balance_wallet_rounded,
+            iconColor: AppColors.paymentWalletIcon,
           ),
           title: AppStrings.checkoutPaymentWallet,
           subtitle: AppStrings.checkoutPaymentWalletBalance,
@@ -85,6 +66,31 @@ class PaymentMethodSection extends StatelessWidget {
           onTap: () => onPaymentSelected(2),
         ),
       ],
+    );
+  }
+}
+
+/// Compact rounded icon container used inside payment option cards.
+class _PaymentIcon extends StatelessWidget {
+  const _PaymentIcon({
+    required this.bgColor,
+    required this.icon,
+    required this.iconColor,
+  });
+
+  final Color bgColor;
+  final IconData icon;
+  final Color iconColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppConstants.paddingS),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(AppConstants.radiusS),
+      ),
+      child: Icon(icon, color: iconColor, size: AppConstants.iconM),
     );
   }
 }
