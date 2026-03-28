@@ -115,6 +115,10 @@ class AppStrings {
 
   // Checkout screen
   static const String checkoutTitle = 'Checkout';
+  static const String checkoutSecurePayment = 'Secure & Encrypted';
+  static const String checkoutStepDetails = 'Details';
+  static const String checkoutStepBooking = 'Booking';
+  static const String checkoutStepConfirm = 'Confirm';
   static const String checkoutSelectedService = 'Selected Service';
   static const String checkoutServiceAddress = 'Service Address';
   static const String checkoutAddressHome = 'Home';
@@ -137,6 +141,7 @@ class AppStrings {
   static const String checkoutDiscount = 'Discount';
   static const String checkoutTotal = 'Total';
   static const String checkoutConfirmBooking = 'Confirm Booking';
+  static const String checkoutPaymentRecommended = 'RECOMMENDED';
   static const String checkoutServiceFeeValue = '\$149.00';
   static const String checkoutTravelFeeValue = '\$10.00';
   static const String checkoutDiscountValue = '-\$20.00';

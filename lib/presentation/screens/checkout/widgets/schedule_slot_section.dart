@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import '../../../../config/theme/app_colors.dart';
 import '../../../../config/theme/app_text_styles.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_strings.dart';
 import 'date_slot_card.dart';
+import 'premium_section_header.dart';
 import 'time_slot_button.dart';
 
 /// Section that allows the user to pick a date and time slot.
@@ -46,13 +48,13 @@ class ScheduleSlotSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        PremiumSectionHeader(
           AppStrings.checkoutScheduleSlot,
-          style: AppTextStyles.checkoutSectionTitle,
+          icon: Icons.calendar_today,
         ),
         const SizedBox(height: AppConstants.paddingM),
         SizedBox(
-          height: 72,
+          height: 80,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: _dates.length,

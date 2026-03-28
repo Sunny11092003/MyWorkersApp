@@ -4,6 +4,7 @@ import '../../../../config/theme/app_text_styles.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_strings.dart';
 import 'address_item.dart';
+import 'premium_section_header.dart';
 
 /// Section that shows saved service addresses and an add-new option.
 ///
@@ -24,9 +25,9 @@ class ServiceAddressSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        PremiumSectionHeader(
           AppStrings.checkoutServiceAddress,
-          style: AppTextStyles.checkoutSectionTitle,
+          icon: Icons.location_on_outlined,
         ),
         const SizedBox(height: AppConstants.paddingM),
         AddressItem(
