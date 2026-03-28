@@ -44,6 +44,21 @@ class AppColors {
   static const Color textPrimary = Color(0xFF1A1A1A);
   static const Color textSecondary = Color(0xFF757575);
 
+  // Checkout
+  static const Color checkoutSelectedSlot = Color(0xFF5B5FFF);
+  static const Color checkoutUnselectedSlot = Color(0xFFF5F5F5);
+  static const Color checkoutSelectedPayment = Color(0xFFEEEFFF);
+  static const Color checkoutPaymentBorder = Color(0xFF5B5FFF);
+  static const Color checkoutDivider = Color(0xFFEEEEEE);
+  static const Color checkoutAddressIcon = Color(0xFFE8E8FF);
+  static const Color checkoutSummaryBg = Color(0xFFF8F9FF);
+
+  // Payment method icons
+  static const Color paymentCashBg = Color(0xFFE8F5E9);
+  static const Color paymentCashIcon = Color(0xFF2E7D32);
+  static const Color paymentWalletBg = Color(0xFFFFF3E0);
+  static const Color paymentWalletIcon = Color(0xFFE65100);
+
   // Gradient stops
   static const List<Color> heroBannerGradient = [
     Colors.transparent,

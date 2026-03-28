@@ -122,4 +122,97 @@ class AppTextStyles {
         color: AppColors.grey300,
         height: 1.4,
       );
+
+  // ── Checkout ─────────────────────────────────────────────────────────────
+
+  static TextStyle get checkoutSectionTitle => GoogleFonts.poppins(
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        color: AppColors.textPrimary,
+      );
+
+  static TextStyle get checkoutServiceName => GoogleFonts.poppins(
+        fontSize: 15,
+        fontWeight: FontWeight.w600,
+        color: AppColors.textPrimary,
+      );
+
+  static TextStyle get checkoutServiceSubtitle => GoogleFonts.poppins(
+        fontSize: 13,
+        color: AppColors.textSecondary,
+      );
+
+  static TextStyle get checkoutAddressTitle => GoogleFonts.poppins(
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+        color: AppColors.textPrimary,
+      );
+
+  static TextStyle get checkoutAddressBody => GoogleFonts.poppins(
+        fontSize: 13,
+        color: AppColors.textSecondary,
+        height: 1.5,
+      );
+
+  static TextStyle get checkoutSlotDate => GoogleFonts.poppins(
+        fontSize: 13,
+        fontWeight: FontWeight.w600,
+        color: AppColors.textPrimary,
+      );
+
+  static TextStyle get checkoutSlotDay => GoogleFonts.poppins(
+        fontSize: 11,
+        color: AppColors.textSecondary,
+      );
+
+  static TextStyle get checkoutSlotDateSelected => GoogleFonts.poppins(
+        fontSize: 13,
+        fontWeight: FontWeight.w600,
+        color: AppColors.white,
+      );
+
+  static TextStyle get checkoutSlotDaySelected => GoogleFonts.poppins(
+        fontSize: 11,
+        color: AppColors.white,
+      );
+
+  static TextStyle get checkoutTimeSlot => GoogleFonts.poppins(
+        fontSize: 13,
+        color: AppColors.textPrimary,
+      );
+
+  static TextStyle get checkoutTimeSlotSelected => GoogleFonts.poppins(
+        fontSize: 13,
+        fontWeight: FontWeight.w600,
+        color: AppColors.white,
+      );
+
+  static TextStyle get checkoutPaymentLabel => GoogleFonts.poppins(
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        color: AppColors.textPrimary,
+      );
+
+  static TextStyle get checkoutSummaryLabel => GoogleFonts.poppins(
+        fontSize: 14,
+        color: AppColors.textSecondary,
+      );
+
+  static TextStyle get checkoutSummaryValue => GoogleFonts.poppins(
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        color: AppColors.textPrimary,
+      );
+
+  static TextStyle get checkoutTotal => GoogleFonts.poppins(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        color: AppColors.textPrimary,
+      );
+
+  static TextStyle get checkoutTotalValue => GoogleFonts.poppins(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        color: AppColors.primary,
+      );
 }

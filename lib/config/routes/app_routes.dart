@@ -3,6 +3,7 @@ import 'route_names.dart';
 import '../../features/booking/presentation/screens/booking_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/services/presentation/screens/services_screen.dart';
+import '../../presentation/screens/checkout/checkout_screen.dart';
 import '../../presentation/screens/service_details/service_details_screen.dart';
 
 /// Generates named routes for the application.
@@ -33,6 +34,9 @@ class AppRouter {
 
       case RouteNames.booking:
         return MaterialPageRoute(builder: (_) => const BookingScreen());
+
+      case RouteNames.checkout:
+        return MaterialPageRoute(builder: (_) => const CheckoutScreen());
 
       default:
         return MaterialPageRoute(builder: (_) => const HomeScreen());

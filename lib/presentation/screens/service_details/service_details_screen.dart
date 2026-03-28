@@ -101,7 +101,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
             onPressed: _controller.isLoading
                 ? null
                 : () => _controller.selectDateAndTime(context, () {
-                      Navigator.pushNamed(context, RouteNames.booking);
+                      Navigator.pushNamed(context, RouteNames.checkout);
                     }),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,

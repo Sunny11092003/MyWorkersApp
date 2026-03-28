@@ -112,4 +112,35 @@ class AppStrings {
   static const String bookingSuccessSubtitle =
       'Your service provider will arrive shortly.';
   static const String bookingGoHome = 'Back to Home';
+
+  // Checkout screen
+  static const String checkoutTitle = 'Checkout';
+  static const String checkoutSelectedService = 'Selected Service';
+  static const String checkoutServiceAddress = 'Service Address';
+  static const String checkoutAddressHome = 'Home';
+  static const String checkoutAddressHomeSubtitle =
+      '123 Maple Street, New York, NY 10001';
+  static const String checkoutAddressWork = 'Work';
+  static const String checkoutAddressWorkSubtitle =
+      '456 Park Ave, New York, NY 10022';
+  static const String checkoutAddNewAddress = '+ Add New Address';
+  static const String checkoutScheduleSlot = 'Schedule Slot';
+  static const String checkoutPaymentMethod = 'Payment Method';
+  static const String checkoutPaymentCard = 'Credit / Debit Card';
+  static const String checkoutPaymentCardDetail = '**** **** **** 4242';
+  static const String checkoutPaymentCash = 'Cash on Delivery';
+  static const String checkoutPaymentWallet = 'Wallet';
+  static const String checkoutPaymentWalletBalance = 'Balance: \$24.50';
+  static const String checkoutPriceSummary = 'Price Summary';
+  static const String checkoutServiceFee = 'Service Fee';
+  static const String checkoutTravelFee = 'Travel Fee';
+  static const String checkoutDiscount = 'Discount';
+  static const String checkoutTotal = 'Total';
+  static const String checkoutConfirmBooking = 'Confirm Booking';
+  static const String checkoutServiceFeeValue = '\$149.00';
+  static const String checkoutTravelFeeValue = '\$10.00';
+  static const String checkoutDiscountValue = '-\$20.00';
+  static const String checkoutTotalValue = '\$139.00';
+  static const String checkoutServiceDuration = '4–6 hrs';
+  static const String checkoutServiceRating = '4.9 ★';
 }
