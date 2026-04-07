@@ -316,26 +316,38 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
                   _inclusionItem(
                     Icons.cleaning_services,
                     'Deep dusting of all surfaces & furniture',
+                    const Color(0xFFE0F2FE),
+                    const Color(0xFF06B6D4),
                   ),
                   _inclusionItem(
                     Icons.water_drop_outlined,
                     'Floor mopping & vacuum cleaning',
+                    const Color(0xFFFCE7F3),
+                    const Color(0xFFEC4899),
                   ),
                   _inclusionItem(
                     Icons.kitchen_outlined,
                     'Kitchen counters, sink & appliance exteriors',
+                    const Color(0xFFFFF7ED),
+                    const Color(0xFFFB923C),
                   ),
                   _inclusionItem(
                     Icons.bathtub_outlined,
                     'Bathroom scrubbing & sanitisation',
+                    const Color(0xFFDCFCE7),
+                    const Color(0xFF22C55E),
                   ),
                   _inclusionItem(
                     Icons.bed_outlined,
                     'Bedroom tidying & linen change (optional)',
+                    const Color(0xFFEDE9FE),
+                    const Color(0xFF8B5CF6),
                   ),
                   _inclusionItem(
                     Icons.window_outlined,
                     'Window sills & interior glass wipe-down',
+                    const Color(0xFFE0F2FE),
+                    const Color(0xFF4361EE),
                   ),
 
                   const SizedBox(height: 24),
@@ -486,20 +498,20 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
 
   Widget _sectionDivider() => Divider(color: Colors.grey[200], thickness: 1);
 
-  Widget _inclusionItem(IconData icon, String text) {
+  Widget _inclusionItem(IconData icon, String text, Color bgColor, Color iconColor) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 38,
-            height: 38,
+            width: 42,
+            height: 42,
             decoration: BoxDecoration(
-              color: const Color(0xFF4361EE).withValues(alpha: 0.10),
-              borderRadius: BorderRadius.circular(12),
+              color: bgColor,
+              borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(icon, size: 18, color: const Color(0xFF4361EE)),
+            child: Icon(icon, size: 20, color: iconColor),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -515,12 +527,12 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
               ),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.only(top: 9),
+          Padding(
+            padding: const EdgeInsets.only(top: 9),
             child: Icon(
               Icons.check_circle_rounded,
               size: 18,
-              color: Color(0xFF4361EE),
+              color: iconColor,
             ),
           ),
         ],
