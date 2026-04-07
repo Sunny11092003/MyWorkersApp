@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:my_workers_app/screens/detailed_services_screen.dart';
 
 class FeaturedCard extends StatelessWidget {
   const FeaturedCard({super.key});
@@ -132,7 +133,20 @@ class FeaturedCard extends StatelessWidget {
                       ),
                     ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const DetailedServicesScreen(
+                              title: 'Eco-Friendly Deep Clean',
+                              rating: '4.9',
+                              duration: '2-3 HRS',
+                              price: '89',
+                              imageAsset: 'assets/images/eco_frndly_clean.webp',
+                            ),
+                          ),
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF4361EE),
                         foregroundColor: Colors.white,
