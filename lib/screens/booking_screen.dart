@@ -331,7 +331,7 @@ class _BookingScreenState extends State<BookingScreen> {
                             color: Colors.black87,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 2),
                         Text(
                           _formatFullDate(days[_selectedDayIndex]),
                           style: GoogleFonts.poppins(
@@ -339,15 +339,43 @@ class _BookingScreenState extends State<BookingScreen> {
                             color: Colors.grey[600],
                           ),
                         ),
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.star_rounded,
+                              size: 14,
+                              color: Color(0xFFFBBF24),
+                            ),
+                            const SizedBox(width: 3),
+                            Text(
+                              '4.8',
+                              style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey[700],
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '(128 reviews)',
+                              style: GoogleFonts.poppins(
+                                fontSize: 11,
+                                color: Colors.grey[500],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '\$${widget.price}',
+                          style: GoogleFonts.poppins(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF4361EE),
+                          ),
+                        ),
                       ],
-                    ),
-                  ),
-                  Text(
-                    '\$${widget.price}',
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFF4361EE),
                     ),
                   ),
                 ],
@@ -500,13 +528,14 @@ class _BookingScreenState extends State<BookingScreen> {
                           ),
                           decoration: BoxDecoration(
                             color: selected
-                                ? const Color(0xFF4361EE)
+                                ? const Color(0xFFEEF2FF)
                                 : Colors.grey[100],
                             borderRadius: BorderRadius.circular(22),
                             border: Border.all(
                               color: selected
                                   ? const Color(0xFF4361EE)
                                   : Colors.grey[200]!,
+                              width: selected ? 2 : 1,
                             ),
                           ),
                           child: Text(
@@ -515,7 +544,7 @@ class _BookingScreenState extends State<BookingScreen> {
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                               color: selected
-                                  ? Colors.white
+                                  ? const Color(0xFF4361EE)
                                   : Colors.black87,
                             ),
                           ),
@@ -667,17 +696,13 @@ class _BookingScreenState extends State<BookingScreen> {
               height: 56,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF4361EE), Color(0xFF3A0CA3)],
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                  ),
-                  borderRadius: BorderRadius.circular(18),
+                  color: const Color(0xFF4361EE),
+                  borderRadius: BorderRadius.circular(22),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF4361EE).withValues(alpha: 0.40),
-                      blurRadius: 16,
-                      offset: const Offset(0, 6),
+                      color: const Color(0xFF4361EE).withValues(alpha: 0.10),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
                     ),
                   ],
                 ),
@@ -688,23 +713,16 @@ class _BookingScreenState extends State<BookingScreen> {
                     shadowColor: Colors.transparent,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18),
+                      borderRadius: BorderRadius.circular(22),
                     ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Confirm Booking',
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 0.3,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      const Icon(Icons.arrow_forward_rounded, size: 18),
-                    ],
+                  child: Text(
+                    'Confirm Booking',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.3,
+                    ),
                   ),
                 ),
               ),
@@ -720,20 +738,15 @@ class _BookingScreenState extends State<BookingScreen> {
   Widget _sectionCard({required Widget child}) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 14,
-            offset: const Offset(0, 4),
-          ),
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 4,
-            offset: const Offset(0, 1),
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -817,11 +830,25 @@ class _BookingScreenState extends State<BookingScreen> {
                 ],
               ),
             ),
-            Radio<int>(
-              value: index,
-              groupValue: _selectedAddressIndex,
-              activeColor: const Color(0xFF4361EE),
-              onChanged: (v) => setState(() => _selectedAddressIndex = v!),
+            Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                color: selected
+                    ? const Color(0xFF4361EE)
+                    : Colors.transparent,
+                shape: BoxShape.circle,
+                border: selected
+                    ? null
+                    : Border.all(color: Colors.grey[300]!, width: 1.5),
+              ),
+              child: selected
+                  ? const Icon(
+                      Icons.check,
+                      color: Colors.white,
+                      size: 14,
+                    )
+                  : null,
             ),
           ],
         ),
@@ -867,11 +894,11 @@ class _BookingScreenState extends State<BookingScreen> {
         child: Row(
           children: [
             Container(
-              width: 42,
-              height: 42,
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(
                 color: iconBgColor,
-                shape: BoxShape.circle,
+                borderRadius: BorderRadius.circular(10),
                 boxShadow: [
                   BoxShadow(
                     color: iconBgColor.withValues(alpha: 0.30),
@@ -905,11 +932,21 @@ class _BookingScreenState extends State<BookingScreen> {
                 ],
               ),
             ),
-            Radio<String>(
-              value: value,
-              groupValue: _selectedPayment,
-              activeColor: const Color(0xFF4361EE),
-              onChanged: (v) => setState(() => _selectedPayment = v!),
+            Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                color: selected
+                    ? const Color(0xFF4361EE)
+                    : Colors.transparent,
+                shape: BoxShape.circle,
+                border: selected
+                    ? null
+                    : Border.all(color: Colors.grey[300]!, width: 1.5),
+              ),
+              child: selected
+                  ? const Icon(Icons.check, color: Colors.white, size: 14)
+                  : null,
             ),
           ],
         ),
