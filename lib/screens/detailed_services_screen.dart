@@ -1,151 +1,485 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'booking_screen.dart';
 
-class ServiceDetailsScreen extends StatelessWidget {
-  const ServiceDetailsScreen({super.key});
+class DetailedServicesScreen extends StatefulWidget {
+  final String title;
+  final String rating;
+  final String duration;
+  final String price;
+  final String imageAsset;
+
+  const DetailedServicesScreen({
+    super.key,
+    required this.title,
+    required this.rating,
+    required this.duration,
+    required this.price,
+    required this.imageAsset,
+  });
+
+  @override
+  State<DetailedServicesScreen> createState() => _DetailedServicesScreenState();
+}
+
+class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
+  DateTime? _selectedDateTime;
+
+  Future<void> _pickDateTime(BuildContext context) async {
+    final now = DateTime.now();
+    final date = await showDatePicker(
+      context: context,
+      initialDate: now,
+      firstDate: now,
+      lastDate: now.add(const Duration(days: 90)),
+      builder: (ctx, child) => Theme(
+        data: Theme.of(ctx).copyWith(
+          colorScheme: const ColorScheme.light(primary: Color(0xFF4361EE)),
+        ),
+        child: child!,
+      ),
+    );
+    if (date == null || !mounted) return;
+
+    final time = await showTimePicker(
+      context: context,
+      initialTime: const TimeOfDay(hour: 10, minute: 0),
+      builder: (ctx, child) => Theme(
+        data: Theme.of(ctx).copyWith(
+          colorScheme: const ColorScheme.light(primary: Color(0xFF4361EE)),
+        ),
+        child: child!,
+      ),
+    );
+    if (time == null || !mounted) return;
+
+    setState(() {
+      _selectedDateTime = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        time.hour,
+        time.minute,
+      );
+    });
+  }
+
+  String _formatDateTime(DateTime dt) {
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    ];
+    final hour = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
+    final min = dt.minute.toString().padLeft(2, '0');
+    final amPm = dt.hour < 12 ? 'AM' : 'PM';
+    return '${dt.day} ${months[dt.month - 1]}, $hour:$min $amPm';
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {},
-        ),
-        title: Text(
-          'Full Home Deep Cleaning',
-          style: GoogleFonts.poppins(
-            color: Colors.black,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        centerTitle: false,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.share, color: Colors.black),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Service Card with Image
-              _buildServiceCard(),
-              const SizedBox(height: 24),
-              
-              // Duration, Rating, Price Row
-              _buildServiceInfo(),
-              const SizedBox(height: 32),
-              
-              // Service Experience Section
-              _buildServiceExperience(),
-              const SizedBox(height: 32),
-              
-              // What's Included Section
-              _buildWhatsIncluded(),
-              const SizedBox(height: 32),
-              
-              // Kinetic Promise Section
-              _buildKineticPromise(),
-              const SizedBox(height: 32),
-              
-              // Select Date & Time Button
-              _buildSelectDateButton(),
-              const SizedBox(height: 16),
-              
-              // Estimate Total
-              _buildEstimateTotal(),
-              const SizedBox(height: 32),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildServiceCard() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(32),
-      child: Stack(
-        children: [
-          // Image placeholder
-          Container(
-            height: 300,
-            width: double.infinity,
-            color: Colors.grey[300],
-            child: Image.network(
-              'https://via.placeholder.com/400x300?text=Living+Room',
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  color: Colors.grey[300],
-                  child: const Center(
-                    child: Text('Image Placeholder'),
+      body: CustomScrollView(
+        slivers: [
+          // ── Hero App Bar ──────────────────────────────────────────────
+          SliverAppBar(
+            expandedHeight: 280,
+            pinned: true,
+            backgroundColor: Colors.white,
+            elevation: 0,
+            leading: GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                margin: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.1),
+                      blurRadius: 6,
+                    ),
+                  ],
+                ),
+                child: const Icon(Icons.arrow_back, color: Colors.black87),
+              ),
+            ),
+            actions: [
+              GestureDetector(
+                onTap: () {},
+                child: Container(
+                  margin: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 6,
+                      ),
+                    ],
                   ),
-                );
-              },
-            ),
-          ),
-          // Gradient Overlay
-          Container(
-            height: 300,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.transparent,
-                  Colors.black.withOpacity(0.5),
-                ],
+                  child: const Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Icon(Icons.share_outlined, color: Colors.black87),
+                  ),
+                ),
               ),
-            ),
-          ),
-          // Premium Badge
-          Positioned(
-            top: 16,
-            left: 16,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: const Color(0xFF5B5FFF),
-                borderRadius: BorderRadius.circular(20),
+              GestureDetector(
+                onTap: () {},
+                child: Container(
+                  margin: const EdgeInsets.only(right: 12, top: 8, bottom: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 6,
+                      ),
+                    ],
+                  ),
+                  child: const Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Icon(Icons.bookmark_border, color: Colors.black87),
+                  ),
+                ),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
+            ],
+            flexibleSpace: FlexibleSpaceBar(
+              background: Stack(
+                fit: StackFit.expand,
                 children: [
-                  const Icon(Icons.star, color: Colors.white, size: 14),
-                  const SizedBox(width: 4),
-                  Text(
-                    'PREMIUM',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
+                  Image.asset(
+                    widget.imageAsset,
+                    fit: BoxFit.cover,
+                  ),
+                  // Gradient overlay
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withValues(alpha: 0.5),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // Rating badge
+                  Positioned(
+                    bottom: 16,
+                    left: 16,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.star,
+                            size: 14,
+                            color: Color(0xFFF59E0B),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${widget.rating} Rating',
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // PREMIUM badge
+                  Positioned(
+                    bottom: 16,
+                    right: 16,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF4361EE),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        'PREMIUM',
+                        style: GoogleFonts.poppins(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          letterSpacing: 1,
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
           ),
-          // Title Overlay
-          Positioned(
-            bottom: 16,
-            left: 16,
-            right: 16,
-            child: Text(
-              'Revitalize Your\nLiving Sanctuary',
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
+
+          // ── Content ───────────────────────────────────────────────────
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 120),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Title & Duration
+                  Text(
+                    widget.title,
+                    style: GoogleFonts.poppins(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      const Icon(Icons.access_time,
+                          size: 15, color: Colors.grey),
+                      const SizedBox(width: 4),
+                      Text(
+                        widget.duration,
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      const Icon(Icons.people_outline,
+                          size: 15, color: Colors.grey),
+                      const SizedBox(width: 4),
+                      Text(
+                        '2,400+ bookings',
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 24),
+                  _sectionDivider(),
+
+                  // About Service
+                  const SizedBox(height: 20),
+                  Text(
+                    'About This Service',
+                    style: GoogleFonts.poppins(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Experience a spotless home with our premium cleaning service. '
+                    'Our certified professionals use hospital-grade, eco-friendly '
+                    'products to deliver a deep, thorough clean — from top to bottom. '
+                    'Whether it\'s your bedroom, kitchen, or bathroom, we leave every '
+                    'corner sparkling.',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: Colors.grey[700],
+                      height: 1.6,
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+                  _sectionDivider(),
+
+                  // What's Included
+                  const SizedBox(height: 20),
+                  Text(
+                    "What's Included",
+                    style: GoogleFonts.poppins(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  _inclusionItem(
+                    Icons.cleaning_services,
+                    'Deep dusting of all surfaces & furniture',
+                  ),
+                  _inclusionItem(
+                    Icons.water_drop_outlined,
+                    'Floor mopping & vacuum cleaning',
+                  ),
+                  _inclusionItem(
+                    Icons.kitchen_outlined,
+                    'Kitchen counters, sink & appliance exteriors',
+                  ),
+                  _inclusionItem(
+                    Icons.bathtub_outlined,
+                    'Bathroom scrubbing & sanitisation',
+                  ),
+                  _inclusionItem(
+                    Icons.bed_outlined,
+                    'Bedroom tidying & linen change (optional)',
+                  ),
+                  _inclusionItem(
+                    Icons.window_outlined,
+                    'Window sills & interior glass wipe-down',
+                  ),
+
+                  const SizedBox(height: 24),
+                  _sectionDivider(),
+
+                  // Our Promise Banner
+                  const SizedBox(height: 20),
+                  _promiseBanner(),
+
+                  const SizedBox(height: 24),
+                  _sectionDivider(),
+
+                  // Reviews teaser
+                  const SizedBox(height: 20),
+                  _reviewsTeaser(),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+
+      // ── Sticky Bottom Bar ─────────────────────────────────────────────
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 12,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            // Price column
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Starting at',
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                Text(
+                  '\$${widget.price}',
+                  style: GoogleFonts.poppins(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFF4361EE),
+                  ),
+                ),
+                if (_selectedDateTime != null)
+                  Text(
+                    _formatDateTime(_selectedDateTime!),
+                    style: GoogleFonts.poppins(
+                      fontSize: 11,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(width: 16),
+            // CTA Button
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () => _onBookTap(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF4361EE),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 2,
+                ),
+                child: Text(
+                  _selectedDateTime == null
+                      ? 'Select Date & Time'
+                      : 'Book Now  →',
+                  style: GoogleFonts.poppins(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _onBookTap(BuildContext context) {
+    if (_selectedDateTime == null) {
+      _pickDateTime(context);
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => BookingScreen(
+            serviceTitle: widget.title,
+            price: widget.price,
+            imageAsset: widget.imageAsset,
+            scheduledDateTime: _selectedDateTime!,
+          ),
+        ),
+      );
+    }
+  }
+
+  Widget _sectionDivider() => Divider(color: Colors.grey[200], thickness: 1);
+
+  Widget _inclusionItem(IconData icon, String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: const Color(0xFF4361EE).withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, size: 18, color: const Color(0xFF4361EE)),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                text,
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  color: Colors.black87,
+                  height: 1.4,
+                ),
               ),
             ),
           ),
@@ -154,202 +488,59 @@ class ServiceDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildServiceInfo() {
+  Widget _promiseBanner() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildInfoItem('DURATION', '4-6 hrs', Icons.schedule),
-          _buildInfoItem('RATING', '4.9 (1.2k)', Icons.star),
-          _buildInfoItem('STARTS AT', '\$149', Icons.local_offer),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInfoItem(String label, String value, IconData icon) {
-    return Column(
-      children: [
-        Icon(icon, color: const Color(0xFF5B5FFF), size: 20),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: GoogleFonts.poppins(
-            fontSize: 11,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey[600],
-          ),
+        gradient: const LinearGradient(
+          colors: [Color(0xFF4361EE), Color(0xFF3A0CA3)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: GoogleFonts.poppins(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildServiceExperience() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Service Experience',
-          style: GoogleFonts.poppins(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          'Our signature deep cleaning service goes beyond the surface. We target hidden dust, stubborn stains, and allergens in every corner of your home using eco-friendly, hospital-grade disinfectants. Designed for those who demand a medical-grade level of hygiene and a hotel-fresh feel.',
-          style: GoogleFonts.poppins(
-            fontSize: 14,
-            color: Colors.grey[700],
-            height: 1.6,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildWhatsIncluded() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'What\'s Included',
-          style: GoogleFonts.poppins(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 16),
-        GridView.count(
-          crossAxisCount: 2,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          children: [
-            _buildIncludedCard(
-              'Living Spaces',
-              ['Upright vacuum', 'Glass polishing', 'Baseboard detail'],
-              const Color(0xFFE3F2FD),
-              Icons.living,
-            ),
-            _buildIncludedCard(
-              'Kitchen Detail',
-              ['Appliance exterior', 'Degreasing', 'Cabinet sanitation'],
-              const Color(0xFFE0F7F4),
-              Icons.kitchen,
-            ),
-            _buildIncludedCard(
-              'Bathroom Disinfection',
-              ['Complete scrub down', 'Grout & fixtures', 'Deep sanitization'],
-              const Color(0xFFFCE4EC),
-              Icons.bathroom,
-            ),
-            _buildIncludedCard(
-              'Full Sanitization',
-              ['High-touch surfaces', 'Disinfection throughout', 'Home'],
-              const Color(0xFFFFF3E0),
-              Icons.shield,
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildIncludedCard(String title, List<String> items, Color bgColor, IconData icon) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: const Color(0xFF5B5FFF), size: 28),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          const SizedBox(height: 8),
-          ...items.map((item) => Padding(
-            padding: const EdgeInsets.only(bottom: 4.0),
-            child: Row(
-              children: [
-                const Icon(Icons.check_circle, size: 12, color: Color(0xFF5B5FFF)),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Text(
-                    item,
-                    style: GoogleFonts.poppins(
-                      fontSize: 11,
-                      color: Colors.grey[700],
-                    ),
-                  ),
+          Row(
+            children: [
+              const Icon(Icons.shield_outlined, color: Colors.white, size: 22),
+              const SizedBox(width: 8),
+              Text(
+                'Our Promise to You',
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
-              ],
-            ),
-          )),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          _promiseItem(Icons.verified_outlined, '100% Satisfaction Guarantee'),
+          _promiseItem(Icons.replay_outlined, 'Free Re-clean if Unhappy'),
+          _promiseItem(
+            Icons.security_outlined,
+            'Background-Checked Professionals',
+          ),
+          _promiseItem(Icons.eco_outlined, 'Eco-Friendly Products Only'),
         ],
       ),
     );
   }
 
-  Widget _buildKineticPromise() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1a1e3f),
-        borderRadius: BorderRadius.circular(20),
-      ),
+  Widget _promiseItem(IconData icon, String label) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         children: [
-          const Icon(Icons.shield, color: Colors.white, size: 32),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'The Kinetic Promise',
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Every professional is background-checked and vetted. 100% satisfaction or we clean it again for free.',
-                  style: GoogleFonts.poppins(
-                    color: Colors.grey[300],
-                    fontSize: 13,
-                    height: 1.4,
-                  ),
-                ),
-              ],
+          Icon(icon, color: Colors.white70, size: 16),
+          const SizedBox(width: 10),
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: 13,
+              color: Colors.white,
             ),
           ),
         ],
@@ -357,59 +548,93 @@ class ServiceDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSelectDateButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: () {},
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF5B5FFF),
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+  Widget _reviewsTeaser() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Customer Reviews',
+          style: GoogleFonts.poppins(
+            fontSize: 17,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
           ),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Select Date & Time',
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(width: 8),
-            const Icon(Icons.arrow_forward, color: Colors.white, size: 20),
-          ],
-        ),
-      ),
+        const SizedBox(height: 14),
+        _reviewCard('Sarah M.', '5.0', 'Absolutely wonderful service! '
+            'The team arrived on time and left my home spotless.'),
+        const SizedBox(height: 12),
+        _reviewCard('James R.', '4.8',
+            'Very thorough cleaning. Would definitely book again!'),
+      ],
     );
   }
 
-  Widget _buildEstimateTotal() {
-    return Column(
-      children: [
-        Text(
-          'ESTIMATE TOTAL',
-          style: GoogleFonts.poppins(
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey[600],
-            letterSpacing: 1,
+  Widget _reviewCard(String name, String rating, String review) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey[200]!),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 18,
+                backgroundColor:
+                    const Color(0xFF4361EE).withValues(alpha: 0.15),
+                child: Text(
+                  name[0],
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFF4361EE),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      const Icon(Icons.star,
+                          size: 12, color: Color(0xFFF59E0B)),
+                      const SizedBox(width: 2),
+                      Text(
+                        rating,
+                        style: GoogleFonts.poppins(
+                          fontSize: 11,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
           ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          '\$149.00',
-          style: GoogleFonts.poppins(
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
+          const SizedBox(height: 8),
+          Text(
+            review,
+            style: GoogleFonts.poppins(
+              fontSize: 13,
+              color: Colors.grey[700],
+              height: 1.5,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

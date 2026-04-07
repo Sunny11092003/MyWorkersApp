@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:my_workers_app/screens/detailed_services_screen.dart';
 
 class ServiceCardVertical extends StatelessWidget {
   final String title;
@@ -111,7 +112,20 @@ class ServiceCardVertical extends StatelessWidget {
                       ),
                     ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => DetailedServicesScreen(
+                              title: title,
+                              rating: rating,
+                              duration: duration,
+                              price: price,
+                              imageAsset: imageAsset,
+                            ),
+                          ),
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF4361EE),
                         foregroundColor: Colors.white,
