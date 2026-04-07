@@ -78,14 +78,14 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF3F0F8),
       body: CustomScrollView(
         slivers: [
           // ── Hero App Bar ──────────────────────────────────────────────
           SliverAppBar(
-            expandedHeight: 280,
+            expandedHeight: 300,
             pinned: true,
-            backgroundColor: Colors.white,
+            backgroundColor: const Color(0xFFF3F0F8),
             elevation: 0,
             leading: GestureDetector(
               onTap: () => Navigator.pop(context),
@@ -96,8 +96,9 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      blurRadius: 6,
+                      color: Colors.black.withValues(alpha: 0.12),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
                     ),
                   ],
                 ),
@@ -114,8 +115,9 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: 6,
+                        color: Colors.black.withValues(alpha: 0.12),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
                       ),
                     ],
                   ),
@@ -134,8 +136,9 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: 6,
+                        color: Colors.black.withValues(alpha: 0.12),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
                       ),
                     ],
                   ),
@@ -147,84 +150,109 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
               ),
             ],
             flexibleSpace: FlexibleSpaceBar(
-              background: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Image.asset(
-                    widget.imageAsset,
-                    fit: BoxFit.cover,
+              background: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(26),
+                    bottomRight: Radius.circular(26),
                   ),
-                  // Gradient overlay
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          Colors.black.withValues(alpha: 0.5),
-                        ],
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Image.asset(
+                        widget.imageAsset,
+                        fit: BoxFit.cover,
                       ),
-                    ),
-                  ),
-                  // Rating badge
-                  Positioned(
-                    bottom: 16,
-                    left: 16,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.star,
-                            size: 14,
-                            color: Color(0xFFF59E0B),
+                      // Dark bottom gradient overlay
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            stops: const [0.4, 1.0],
+                            colors: [
+                              Colors.transparent,
+                              Colors.black.withValues(alpha: 0.65),
+                            ],
                           ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${widget.rating} Rating',
-                            style: GoogleFonts.poppins(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  // PREMIUM badge
-                  Positioned(
-                    bottom: 16,
-                    right: 16,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF4361EE),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        'PREMIUM',
-                        style: GoogleFonts.poppins(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                          letterSpacing: 1,
                         ),
                       ),
-                    ),
+                      // Rating badge (bottom-left)
+                      Positioned(
+                        bottom: 16,
+                        left: 16,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(14),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.15),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.star_rounded,
+                                size: 15,
+                                color: Color(0xFFF59E0B),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${widget.rating} Rating',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      // PREMIUM badge (bottom-right)
+                      Positioned(
+                        bottom: 16,
+                        right: 16,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF4361EE),
+                            borderRadius: BorderRadius.circular(14),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF4361EE)
+                                    .withValues(alpha: 0.40),
+                                blurRadius: 10,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            'PREMIUM',
+                            style: GoogleFonts.poppins(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ),
@@ -236,7 +264,7 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Title & Duration
+                  // Title
                   Text(
                     widget.title,
                     style: GoogleFonts.poppins(
@@ -245,40 +273,16 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
                       color: Colors.black87,
                     ),
                   ),
-                  const SizedBox(height: 6),
-                  Row(
-                    children: [
-                      const Icon(Icons.access_time,
-                          size: 15, color: Colors.grey),
-                      const SizedBox(width: 4),
-                      Text(
-                        widget.duration,
-                        style: GoogleFonts.poppins(
-                          fontSize: 13,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      const Icon(Icons.people_outline,
-                          size: 15, color: Colors.grey),
-                      const SizedBox(width: 4),
-                      Text(
-                        '2,400+ bookings',
-                        style: GoogleFonts.poppins(
-                          fontSize: 13,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ],
-                  ),
+                  const SizedBox(height: 16),
+
+                  // ── Service Info Card ──────────────────────────────────
+                  _serviceInfoCard(),
 
                   const SizedBox(height: 24),
-                  _sectionDivider(),
 
-                  // About Service
-                  const SizedBox(height: 20),
+                  // ── Service Experience ─────────────────────────────────
                   Text(
-                    'About This Service',
+                    'Service Experience',
                     style: GoogleFonts.poppins(
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
@@ -294,16 +298,14 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
                     'corner sparkling.',
                     style: GoogleFonts.poppins(
                       fontSize: 14,
-                      color: Colors.grey[700],
-                      height: 1.6,
+                      color: const Color(0xFF6B7280),
+                      height: 1.7,
                     ),
                   ),
 
                   const SizedBox(height: 24),
-                  _sectionDivider(),
 
-                  // What's Included
-                  const SizedBox(height: 20),
+                  // ── What's Included ────────────────────────────────────
                   Text(
                     "What's Included",
                     style: GoogleFonts.poppins(
@@ -313,55 +315,16 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
                     ),
                   ),
                   const SizedBox(height: 14),
-                  _inclusionItem(
-                    Icons.cleaning_services,
-                    'Deep dusting of all surfaces & furniture',
-                    const Color(0xFFE0F2FE),
-                    const Color(0xFF06B6D4),
-                  ),
-                  _inclusionItem(
-                    Icons.water_drop_outlined,
-                    'Floor mopping & vacuum cleaning',
-                    const Color(0xFFFCE7F3),
-                    const Color(0xFFEC4899),
-                  ),
-                  _inclusionItem(
-                    Icons.kitchen_outlined,
-                    'Kitchen counters, sink & appliance exteriors',
-                    const Color(0xFFFFF7ED),
-                    const Color(0xFFFB923C),
-                  ),
-                  _inclusionItem(
-                    Icons.bathtub_outlined,
-                    'Bathroom scrubbing & sanitisation',
-                    const Color(0xFFDCFCE7),
-                    const Color(0xFF22C55E),
-                  ),
-                  _inclusionItem(
-                    Icons.bed_outlined,
-                    'Bedroom tidying & linen change (optional)',
-                    const Color(0xFFEDE9FE),
-                    const Color(0xFF8B5CF6),
-                  ),
-                  _inclusionItem(
-                    Icons.window_outlined,
-                    'Window sills & interior glass wipe-down',
-                    const Color(0xFFE0F2FE),
-                    const Color(0xFF4361EE),
-                  ),
+                  _inclusionGrid(),
 
                   const SizedBox(height: 24),
-                  _sectionDivider(),
 
-                  // Our Promise Banner
-                  const SizedBox(height: 20),
+                  // ── Kinetic Promise Banner ─────────────────────────────
                   _promiseBanner(),
 
                   const SizedBox(height: 24),
-                  _sectionDivider(),
 
-                  // Reviews teaser
-                  const SizedBox(height: 20),
+                  // ── Reviews teaser ─────────────────────────────────────
                   _reviewsTeaser(),
                 ],
               ),
@@ -372,31 +335,36 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
 
       // ── Sticky Bottom Bar ─────────────────────────────────────────────
       bottomNavigationBar: Container(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+        padding: const EdgeInsets.fromLTRB(20, 14, 20, 32),
         decoration: BoxDecoration(
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.10),
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: 20,
-              offset: const Offset(0, -6),
+              offset: const Offset(0, -4),
             ),
           ],
         ),
-        child: Row(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Price column
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+            // Price display
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
               children: [
                 Text(
-                  'Starting at',
+                  'ESTIMATE TOTAL',
                   style: GoogleFonts.poppins(
-                    fontSize: 12,
-                    color: Colors.grey[600],
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF6B7280),
+                    letterSpacing: 0.8,
                   ),
                 ),
+                const SizedBox(width: 10),
                 Text(
                   '\$${widget.price}',
                   style: GoogleFonts.poppins(
@@ -405,69 +373,62 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
                     color: const Color(0xFF4361EE),
                   ),
                 ),
-                if (_selectedDateTime != null)
+                if (_selectedDateTime != null) ...[
+                  const SizedBox(width: 8),
                   Text(
-                    _formatDateTime(_selectedDateTime!),
+                    '· ${_formatDateTime(_selectedDateTime!)}',
                     style: GoogleFonts.poppins(
                       fontSize: 11,
-                      color: Colors.grey[600],
+                      color: const Color(0xFF6B7280),
                     ),
                   ),
+                ],
               ],
             ),
-            const SizedBox(width: 16),
-            // CTA Button
-            Expanded(
-              child: SizedBox(
-                height: 56,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF4361EE), Color(0xFF3A0CA3)],
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
+            const SizedBox(height: 12),
+            // Full-width CTA Button
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: const Color(0xFF4361EE),
+                  borderRadius: BorderRadius.circular(22),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF4361EE).withValues(alpha: 0.38),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
                     ),
-                    borderRadius: BorderRadius.circular(18),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF4361EE).withValues(alpha: 0.40),
-                        blurRadius: 16,
-                        offset: const Offset(0, 6),
-                      ),
-                    ],
+                  ],
+                ),
+                child: ElevatedButton(
+                  onPressed: () => _onBookTap(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    shadowColor: Colors.transparent,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(22),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  child: ElevatedButton(
-                    onPressed: () => _onBookTap(context),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        _selectedDateTime == null
+                            ? 'Select Date & Time'
+                            : 'Book Now',
+                        style: GoogleFonts.poppins(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.3,
+                        ),
                       ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          _selectedDateTime == null
-                              ? Icons.calendar_today_rounded
-                              : Icons.arrow_forward_rounded,
-                          size: 18,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          _selectedDateTime == null
-                              ? 'Select Date & Time'
-                              : 'Book Now',
-                          style: GoogleFonts.poppins(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0.3,
-                          ),
-                        ),
-                      ],
-                    ),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.arrow_forward_rounded, size: 18),
+                    ],
                   ),
                 ),
               ),
@@ -496,43 +457,143 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
     }
   }
 
-  Widget _sectionDivider() => Divider(color: Colors.grey[200], thickness: 1);
-
-  Widget _inclusionItem(IconData icon, String text, Color bgColor, Color iconColor) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
+  Widget _serviceInfoCard() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: bgColor,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Icon(icon, size: 20, color: iconColor),
-          ),
-          const SizedBox(width: 14),
+          // Duration
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 9),
-              child: Text(
-                text,
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  color: Colors.black87,
-                  height: 1.4,
+            child: Column(
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFDBEAFE),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(
+                    Icons.access_time_rounded,
+                    color: Color(0xFF4361EE),
+                    size: 18,
+                  ),
                 ),
-              ),
+                const SizedBox(height: 6),
+                Text(
+                  widget.duration,
+                  style: GoogleFonts.poppins(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                Text(
+                  'Duration',
+                  style: GoogleFonts.poppins(
+                    fontSize: 11,
+                    color: const Color(0xFF6B7280),
+                  ),
+                ),
+              ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(top: 9),
-            child: Icon(
-              Icons.check_circle_rounded,
-              size: 18,
-              color: iconColor,
+          // Divider
+          Container(
+            width: 1,
+            height: 48,
+            color: const Color(0xFFE5E7EB),
+          ),
+          // Rating
+          Expanded(
+            child: Column(
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFEF9C3),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(
+                    Icons.star_rounded,
+                    color: Color(0xFFF59E0B),
+                    size: 18,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  widget.rating,
+                  style: GoogleFonts.poppins(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                Text(
+                  'Rating',
+                  style: GoogleFonts.poppins(
+                    fontSize: 11,
+                    color: const Color(0xFF6B7280),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Divider
+          Container(
+            width: 1,
+            height: 48,
+            color: const Color(0xFFE5E7EB),
+          ),
+          // Starts At
+          Expanded(
+            child: Column(
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFDCFCE7),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(
+                    Icons.attach_money_rounded,
+                    color: Color(0xFF22C55E),
+                    size: 18,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  '\$${widget.price}',
+                  style: GoogleFonts.poppins(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                Text(
+                  'Starts At',
+                  style: GoogleFonts.poppins(
+                    fontSize: 11,
+                    color: const Color(0xFF6B7280),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -540,15 +601,59 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
     );
   }
 
+  Widget _inclusionGrid() {
+    final items = [
+      (Icons.cleaning_services_rounded, 'Deep Dusting', const Color(0xFFDBEAFE)),
+      (Icons.water_drop_rounded, 'Floor Mopping', const Color(0xFFFCE7F3)),
+      (Icons.kitchen_rounded, 'Kitchen Clean', const Color(0xFFFED7AA)),
+      (Icons.bathtub_rounded, 'Bathroom Scrub', const Color(0xFFDCFCE7)),
+      (Icons.bed_rounded, 'Bedroom Tidy', const Color(0xFFF3E8FF)),
+      (Icons.window_rounded, 'Window Wipe', const Color(0xFFDBEAFE)),
+    ];
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 16,
+        crossAxisSpacing: 16,
+        childAspectRatio: 1.25,
+      ),
+      itemCount: items.length,
+      itemBuilder: (context, index) {
+        final (icon, label, bg) = items[index];
+        return Container(
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: const Color(0xFF4361EE), size: 26),
+              const SizedBox(height: 8),
+              Text(
+                label,
+                style: GoogleFonts.poppins(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Widget _promiseBanner() {
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF4361EE), Color(0xFF3A0CA3)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: const Color(0xFF1E293B),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
@@ -556,10 +661,10 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
         children: [
           Row(
             children: [
-              const Icon(Icons.shield_outlined, color: Colors.white, size: 22),
-              const SizedBox(width: 8),
+              const Icon(Icons.shield_rounded, color: Colors.white, size: 22),
+              const SizedBox(width: 10),
               Text(
-                'Our Promise to You',
+                'The Kinetic Promise',
                 style: GoogleFonts.poppins(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -569,25 +674,34 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
             ],
           ),
           const SizedBox(height: 14),
-          _promiseItem(Icons.verified_outlined, '100% Satisfaction Guarantee'),
-          _promiseItem(Icons.replay_outlined, 'Free Re-clean if Unhappy'),
-          _promiseItem(
-            Icons.security_outlined,
-            'Background-Checked Professionals',
-          ),
-          _promiseItem(Icons.eco_outlined, 'Eco-Friendly Products Only'),
+          _promiseItem('100% Satisfaction Guarantee'),
+          _promiseItem('Free Re-clean if Unhappy'),
+          _promiseItem('Background-Checked Professionals'),
+          _promiseItem('Eco-Friendly Products Only'),
         ],
       ),
     );
   }
 
-  Widget _promiseItem(IconData icon, String label) {
+  Widget _promiseItem(String label) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 10),
       child: Row(
         children: [
-          Icon(icon, color: Colors.white70, size: 16),
-          const SizedBox(width: 10),
+          Container(
+            width: 20,
+            height: 20,
+            decoration: BoxDecoration(
+              color: const Color(0xFF4361EE).withValues(alpha: 0.30),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.check_rounded,
+              color: Colors.white,
+              size: 13,
+            ),
+          ),
+          const SizedBox(width: 12),
           Text(
             label,
             style: GoogleFonts.poppins(
