@@ -360,14 +360,14 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
 
       // ── Sticky Bottom Bar ─────────────────────────────────────────────
       bottomNavigationBar: Container(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
         decoration: BoxDecoration(
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
-              blurRadius: 12,
-              offset: const Offset(0, -4),
+              color: Colors.black.withValues(alpha: 0.10),
+              blurRadius: 20,
+              offset: const Offset(0, -6),
             ),
           ],
         ),
@@ -388,7 +388,7 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
                 Text(
                   '\$${widget.price}',
                   style: GoogleFonts.poppins(
-                    fontSize: 24,
+                    fontSize: 26,
                     fontWeight: FontWeight.bold,
                     color: const Color(0xFF4361EE),
                   ),
@@ -406,24 +406,56 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
             const SizedBox(width: 16),
             // CTA Button
             Expanded(
-              child: ElevatedButton(
-                onPressed: () => _onBookTap(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF4361EE),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+              child: SizedBox(
+                height: 56,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF4361EE), Color(0xFF3A0CA3)],
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                    ),
+                    borderRadius: BorderRadius.circular(18),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF4361EE).withValues(alpha: 0.40),
+                        blurRadius: 16,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
                   ),
-                  elevation: 2,
-                ),
-                child: Text(
-                  _selectedDateTime == null
-                      ? 'Select Date & Time'
-                      : 'Book Now  →',
-                  style: GoogleFonts.poppins(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
+                  child: ElevatedButton(
+                    onPressed: () => _onBookTap(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          _selectedDateTime == null
+                              ? Icons.calendar_today_rounded
+                              : Icons.arrow_forward_rounded,
+                          size: 18,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          _selectedDateTime == null
+                              ? 'Select Date & Time'
+                              : 'Book Now',
+                          style: GoogleFonts.poppins(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -456,23 +488,23 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
 
   Widget _inclusionItem(IconData icon, String text) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 14),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 36,
-            height: 36,
+            width: 38,
+            height: 38,
             decoration: BoxDecoration(
-              color: const Color(0xFF4361EE).withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
+              color: const Color(0xFF4361EE).withValues(alpha: 0.10),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, size: 18, color: const Color(0xFF4361EE)),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 14),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(top: 8),
+              padding: const EdgeInsets.only(top: 9),
               child: Text(
                 text,
                 style: GoogleFonts.poppins(
@@ -481,6 +513,14 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
                   height: 1.4,
                 ),
               ),
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.only(top: 9),
+            child: Icon(
+              Icons.check_circle_rounded,
+              size: 18,
+              color: Color(0xFF4361EE),
             ),
           ),
         ],
