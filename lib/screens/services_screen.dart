@@ -18,7 +18,7 @@ class ServicesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF3F0F8),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

@@ -47,7 +47,7 @@ class _BookingScreenState extends State<BookingScreen> {
   ];
 
   // ── Payment state ─────────────────────────────────────────────────────
-  String _selectedPayment = 'card';
+  String _selectedPayment = 'applepay';
 
   // ── Pricing ───────────────────────────────────────────────────────────
   double get _subtotal => double.tryParse(widget.price) ?? 89.0;
@@ -282,7 +282,7 @@ class _BookingScreenState extends State<BookingScreen> {
     final days = _upcomingDays;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FB),
+      backgroundColor: const Color(0xFFF3F0F8),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -544,21 +544,27 @@ class _BookingScreenState extends State<BookingScreen> {
                   ),
                   const SizedBox(height: 12),
                   _paymentOption(
-                    value: 'card',
+                    value: 'applepay',
+                    icon: Icons.apple,
+                    iconBgColor: const Color(0xFF1C1C1E),
+                    iconColor: Colors.white,
+                    label: 'Apple Pay',
+                    subtitle: 'Tap to pay instantly',
+                  ),
+                  _paymentOption(
+                    value: 'visa',
                     icon: Icons.credit_card,
-                    label: 'Credit / Debit Card',
+                    iconBgColor: const Color(0xFF06B6D4),
+                    iconColor: Colors.white,
+                    label: 'Visa / Debit Card',
                     subtitle: '**** **** **** 4242',
                   ),
                   _paymentOption(
-                    value: 'cash',
-                    icon: Icons.money,
-                    label: 'Cash on Service',
-                    subtitle: 'Pay when the job is done',
-                  ),
-                  _paymentOption(
-                    value: 'wallet',
+                    value: 'upi',
                     icon: Icons.account_balance_wallet_outlined,
-                    label: 'Wallet / UPI',
+                    iconBgColor: const Color(0xFFFB923C),
+                    iconColor: Colors.white,
+                    label: 'UPI',
                     subtitle: 'Google Pay, PhonePe, Paytm',
                   ),
                 ],
@@ -752,13 +758,13 @@ class _BookingScreenState extends State<BookingScreen> {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: selected ? const Color(0xFF4361EE) : Colors.grey[200]!,
-            width: selected ? 1.8 : 1,
+            width: selected ? 2.5 : 1,
           ),
           boxShadow: selected
               ? [
                   BoxShadow(
-                    color: const Color(0xFF4361EE).withValues(alpha: 0.12),
-                    blurRadius: 8,
+                    color: const Color(0xFF4361EE).withValues(alpha: 0.14),
+                    blurRadius: 10,
                     offset: const Offset(0, 3),
                   ),
                 ]
@@ -826,6 +832,8 @@ class _BookingScreenState extends State<BookingScreen> {
   Widget _paymentOption({
     required String value,
     required IconData icon,
+    required Color iconBgColor,
+    required Color iconColor,
     required String label,
     required String subtitle,
   }) {
@@ -844,7 +852,7 @@ class _BookingScreenState extends State<BookingScreen> {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: selected ? const Color(0xFF4361EE) : Colors.grey[200]!,
-            width: selected ? 1.8 : 1,
+            width: selected ? 2.0 : 1,
           ),
           boxShadow: selected
               ? [
@@ -859,19 +867,20 @@ class _BookingScreenState extends State<BookingScreen> {
         child: Row(
           children: [
             Container(
-              width: 40,
-              height: 40,
+              width: 42,
+              height: 42,
               decoration: BoxDecoration(
-                color: selected
-                    ? const Color(0xFF4361EE).withValues(alpha: 0.12)
-                    : Colors.grey[100],
-                borderRadius: BorderRadius.circular(10),
+                color: iconBgColor,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: iconBgColor.withValues(alpha: 0.30),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
               ),
-              child: Icon(
-                icon,
-                color: selected ? const Color(0xFF4361EE) : Colors.grey[600],
-                size: 20,
-              ),
+              child: Icon(icon, color: iconColor, size: 20),
             ),
             const SizedBox(width: 12),
             Expanded(
