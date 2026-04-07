@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:my_workers_app/screens/detailed_services_screen.dart';
 import '../shared/rating_badge.dart'; // import shared component
 
 class ServiceCard extends StatelessWidget {
@@ -114,7 +115,20 @@ class ServiceCard extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => DetailedServicesScreen(
+                              title: title,
+                              rating: rating,
+                              duration: duration,
+                              price: price,
+                              imageAsset: imageAssetPath,
+                            ),
+                          ),
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF4361EE),
                         foregroundColor: Colors.white,
