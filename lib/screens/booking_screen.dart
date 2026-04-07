@@ -57,8 +57,10 @@ class _BookingScreenState extends State<BookingScreen> {
 
   // ── Date helpers ──────────────────────────────────────────────────────
   List<DateTime> get _upcomingDays {
+    // Normalise to midnight so day tiles represent clean calendar days.
     final base = widget.scheduledDateTime;
-    return List.generate(7, (i) => base.add(Duration(days: i)));
+    final midnight = DateTime(base.year, base.month, base.day);
+    return List.generate(7, (i) => midnight.add(Duration(days: i)));
   }
 
   String _dayName(DateTime dt) {
