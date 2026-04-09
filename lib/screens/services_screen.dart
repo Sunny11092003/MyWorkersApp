@@ -218,7 +218,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                 rating: '4.8',
                 duration: '2 Hours',
                 price: '35.00',
-                imageUrl: 'https://lawnedging.com.au/wp-content/uploads/2024/01/lawn-mowing-services-scaled.jpg',
+                imageUrl: 'https://musthavemaintenance.com.au/wp-content/uploads/Lawn-mowing-10.jpg',
               ),
               ServiceCard(
                 title: 'Sofa & Upholstery Shampooing',
@@ -273,14 +273,18 @@ class _ServicesScreenState extends State<ServicesScreen> {
 }
 
 void _showFilterBottomSheet(BuildContext context) {
-  // Mock data for categories - you can replace this with your actual category list
-final List<Map<String, dynamic>> filterCategories = [
-  {'name': 'Cleaning', 'icon': Icons.cleaning_services_rounded},
-  {'name': 'Repair', 'icon': Icons.build_rounded},
-  {'name': 'Painting', 'icon': Icons.format_paint_rounded},
-  {'name': 'Plumbing', 'icon': Icons.water_drop_rounded},
-  {'name': 'Electric', 'icon': Icons.bolt_rounded},
-];
+  // Define your dynamic category and sub-type lists here
+  final List<Map<String, dynamic>> filterCategories = [
+    {'name': 'Cleaning', 'icon': Icons.cleaning_services_rounded},
+    {'name': 'Repair', 'icon': Icons.build_rounded},
+    {'name': 'Painting', 'icon': Icons.format_paint_rounded},
+    {'name': 'Plumbing', 'icon': Icons.water_drop_rounded},
+    {'name': 'Electric', 'icon': Icons.bolt_rounded},
+  ];
+
+  final List<String> serviceSubTypes = [
+    'Deep Clean', 'Express', 'Move-in', 'Sanitization', 'Eco-Friendly'
+  ];
 
   showModalBottomSheet(
     context: context,
@@ -292,136 +296,154 @@ final List<Map<String, dynamic>> filterCategories = [
     builder: (context) {
       return StatefulBuilder(
         builder: (context, setModalState) {
-          return Padding(
-            padding: EdgeInsets.only(
-              left: 24, right: 24, top: 12, 
-              bottom: MediaQuery.of(context).viewInsets.bottom + 24
+          return Container(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.85,
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 40, height: 5,
-                    decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(10)),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Filter & Sort', style: GoogleFonts.plusJakartaSans(fontSize: 22, fontWeight: FontWeight.w800)),
-                    TextButton(onPressed: () => Navigator.pop(context), child: Text('Reset', style: GoogleFonts.plusJakartaSans(color: Colors.redAccent, fontWeight: FontWeight.w700))),
-                  ],
-                ),
-                const SizedBox(height: 24),
-
-                // 1. CATEGORY FILTER (New Section)
-                _buildFilterLabel('Select Category'),
-                const SizedBox(height: 16),
-                SizedBox(
-                  height: 100,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: filterCategories.length,
-                    itemBuilder: (context, index) {
-                      final cat = filterCategories[index];
-                      // To make this functional, you'd check if widget.categoryName == cat['name']
-                      bool isSelected = index == 0; 
-
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 20),
-                        child: Column(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: isSelected ? const Color(0xFF4361EE) : const Color(0xFFF3F4F6),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                cat['icon'] as IconData? ?? Icons.category_rounded,
-                                color: isSelected ? Colors.white : Colors.black87,
-                                size: 24,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              cat['name'].toString(),
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 12,
-                                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                                color: isSelected ? const Color(0xFF4361EE) : Colors.black54,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ),
-
-                const SizedBox(height: 24),
-
-                // 2. SORT BY SECTION
-                _buildFilterLabel('Sort By'),
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 10,
-                  children: ['Most Popular', 'Top Rated', 'Price: Low to High'].map((sort) {
-                    return ChoiceChip(
-                      label: Text(sort),
-                      selected: sort == 'Most Popular',
-                      onSelected: (val) {},
-                      labelStyle: GoogleFonts.plusJakartaSans(
-                        fontSize: 12, 
-                        fontWeight: FontWeight.w600,
-                        color: sort == 'Most Popular' ? Colors.white : Colors.black87,
-                      ),
-                      backgroundColor: const Color(0xFFF3F4F6),
-                      selectedColor: const Color(0xFF111827),
-                      side: BorderSide.none,
-                      showCheckmark: false,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    );
-                  }).toList(),
-                ),
-
-                const SizedBox(height: 24),
-
-                // 3. PRICE RANGE
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildFilterLabel('Price Range'),
-                    Text('\$20 - \$150', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, color: const Color(0xFF4361EE))),
-                  ],
-                ),
-                RangeSlider(
-                  values: const RangeValues(20, 150),
-                  min: 0, max: 250,
-                  activeColor: const Color(0xFF4361EE),
-                  onChanged: (values) {},
-                ),
-
-                const SizedBox(height: 32),
-
-                // 4. APPLY BUTTON
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF111827),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            child: SingleChildScrollView(
+              padding: EdgeInsets.only(
+                left: 24, right: 24, top: 12, 
+                bottom: MediaQuery.of(context).viewInsets.bottom + 24
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40, height: 5,
+                      margin: const EdgeInsets.only(bottom: 20),
+                      decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(10)),
                     ),
-                    onPressed: () => Navigator.pop(context),
-                    child: Text('Apply Filters', style: GoogleFonts.plusJakartaSans(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
                   ),
-                ),
-              ],
+                  
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Filter & Sort', style: GoogleFonts.plusJakartaSans(fontSize: 22, fontWeight: FontWeight.w800)),
+                      TextButton(onPressed: () => Navigator.pop(context), child: Text('Reset', style: GoogleFonts.plusJakartaSans(color: Colors.redAccent, fontWeight: FontWeight.w700))),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
+                  // 1. SELECT CATEGORY (Icon Style)
+                  _buildFilterLabel('Select Category'),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    height: 90,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: filterCategories.length,
+                      itemBuilder: (context, index) {
+                        final cat = filterCategories[index];
+                        bool isSelected = index == 0; 
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 20),
+                          child: GestureDetector(
+                            onTap: () => setModalState(() {}), // Update state on tap
+                            child: Column(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: isSelected ? const Color(0xFF4361EE) : const Color(0xFFF3F4F6),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(cat['icon'] as IconData, color: isSelected ? Colors.white : Colors.black87, size: 24),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(cat['name'], style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500, color: isSelected ? const Color(0xFF4361EE) : Colors.black54)),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // 2. SERVICE TYPE (New - Filter Sub-Categories)
+                  _buildFilterLabel('Service Type'),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: serviceSubTypes.map((type) {
+                      bool isSelected = type == 'Deep Clean';
+                      return FilterChip(
+                        label: Text(type),
+                        selected: isSelected,
+                        onSelected: (val) {},
+                        selectedColor: const Color(0xFF4361EE).withOpacity(0.1),
+                        checkmarkColor: const Color(0xFF4361EE),
+                        labelStyle: GoogleFonts.plusJakartaSans(
+                          color: isSelected ? const Color(0xFF4361EE) : Colors.black87,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        backgroundColor: const Color(0xFFF3F4F6),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10), side: BorderSide.none),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // 3. SORT BY
+                  _buildFilterLabel('Sort By'),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 10,
+                    children: ['Most Popular', 'Top Rated', 'Price: Low to High'].map((sort) {
+                      bool isSelected = sort == 'Most Popular';
+                      return ChoiceChip(
+                        label: Text(sort),
+                        selected: isSelected,
+                        onSelected: (val) {},
+                        selectedColor: const Color(0xFF111827),
+                        backgroundColor: const Color(0xFFF3F4F6),
+                        labelStyle: GoogleFonts.plusJakartaSans(
+                          color: isSelected ? Colors.white : Colors.black87,
+                          fontSize: 13,
+                        ),
+                        side: BorderSide.none,
+                        showCheckmark: false,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // 4. PRICE RANGE
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildFilterLabel('Price Range'),
+                      Text('\$20 - \$150', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, color: const Color(0xFF4361EE))),
+                    ],
+                  ),
+                  RangeSlider(
+                    values: const RangeValues(20, 150),
+                    min: 0, max: 250,
+                    activeColor: const Color(0xFF4361EE),
+                    onChanged: (values) {},
+                  ),
+                  const SizedBox(height: 32),
+
+                  // 5. APPLY BUTTON
+                  SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF111827),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      ),
+                      onPressed: () => Navigator.pop(context),
+                      child: Text('Apply Filters', style: GoogleFonts.plusJakartaSans(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         }
