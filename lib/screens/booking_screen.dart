@@ -464,7 +464,7 @@ class _BookingScreenState extends State<BookingScreen> {
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       itemCount: days.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: 8),
+                      separatorBuilder: (_, _) => const SizedBox(width: 8),
                       itemBuilder: (_, i) {
                         final selected = _selectedDayIndex == i;
                         return GestureDetector(

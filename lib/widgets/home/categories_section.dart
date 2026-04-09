@@ -19,7 +19,7 @@ class CategoriesSection extends StatelessWidget {
               Text(
                 'Explore Departments',
                 style: GoogleFonts.plusJakartaSans(
-                  fontSize: 22,
+                  fontSize: 18,
                   fontWeight: FontWeight.w800,
                   color: const Color(0xFF111827),
                 ),

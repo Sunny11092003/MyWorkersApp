@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:my_workers_app/screens/detailed_services_screen.dart';
-import '../shared/rating_badge.dart';
 
 class ServiceCard extends StatelessWidget {
   final String title;

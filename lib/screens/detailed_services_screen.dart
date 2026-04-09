@@ -170,7 +170,7 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
                           gradient: LinearGradient(
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
-                            stops: const [0.4, 1.0],
+                              stops: [0.2, 1.0],
                             colors: [
                               Colors.transparent,
                               Colors.black.withValues(alpha: 0.65),

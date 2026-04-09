@@ -5,7 +5,7 @@ import '../widgets/home/search_bar.dart';
 import '../widgets/home/offer_card.dart';
 import '../widgets/home/categories_section.dart';
 import '../widgets/home/service_card.dart';
-import '../widgets/home/tracking_card.dart';
+import '../screens/services_screen.dart'; // adjust path if needed
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -85,7 +85,20 @@ class HomeScreen extends StatelessWidget {
               const CategoriesSection(), // Added back as requested
               const SizedBox(height: 32),
 
-              // 4. Recommended Section Header
+              // THE URGENCY AD (Electrical Services)
+              const UrgencyTimerAd(),
+
+              const SizedBox(height: 32),
+
+              // 6. Bottom spacing for navigation bar clarity
+              const SizedBox(height: 32),
+
+              // THE HELP & SUPPORT SECTION
+              const PackageSection(),
+
+              const SizedBox(height: 32),
+              // 4. Recommended Section Hea
+              // der
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -97,17 +110,27 @@ class HomeScreen extends StatelessWidget {
                       color: const Color(0xFF111827),
                     ),
                   ),
-                  TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      'See All',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFF4361EE),
-                      ),
-                    ),
-                  ),
+TextButton(
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ServicesScreen(
+          categoryName: "All Services",
+          categoryId: "all",
+        ),
+      ),
+    );
+  },
+  child: Text(
+    'See All',
+    style: GoogleFonts.plusJakartaSans(
+      fontSize: 14,
+      fontWeight: FontWeight.w700,
+      color: const Color(0xFF4361EE),
+    ),
+  ),
+),
                 ],
               ),
               const SizedBox(height: 12),
@@ -135,10 +158,354 @@ class HomeScreen extends StatelessWidget {
                 imageUrl: 'https://dioncomfort.com/wp-content/uploads/2024/10/ac-repair.jpg',
               ),
 
-              // 6. Bottom spacing for navigation bar clarity
+              // 7. Bottom spacing for navigation bar clarity
               const SizedBox(height: 40),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class UrgencyTimerAd extends StatelessWidget {
+  const UrgencyTimerAd({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF9E7), // Light warm yellow
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: const Color(0xFFFFC107).withOpacity(0.3)),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Stack(
+          children: [
+            // Decorative background circle for "Canva" feel
+            Positioned(
+              right: -30,
+              top: -30,
+              child: CircleAvatar(
+                radius: 60,
+                backgroundColor: const Color(0xFFFFC107).withOpacity(0.1),
+              ),
+            ),
+            
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Row(
+                children: [
+                  // Left Side: Icon and Text
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.bolt_rounded, color: Color(0xFFFFA500), size: 20),
+                            const SizedBox(width: 8),
+                            Text(
+                              'ELECTRICAL SPECIAL',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w800,
+                                color: const Color(0xFFFFA500),
+                                letterSpacing: 1,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Book within 10 hours\nto get 25% OFF',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(0xFF111827),
+                            height: 1.3,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Valid on all electrical repairs',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  // Right Side: Timer UI & Action
+                  Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF111827),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          '09:59:59',
+                          style: GoogleFonts.jetBrainsMono( // Mono font for timer look
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF4361EE),
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        ),
+                        child: const Text('Claim Now', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class PackageSection extends StatelessWidget {
+  const PackageSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Select Service Tier',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: const Color(0xFF111827),
+              ),
+            ),
+            _buildStatusTag(),
+          ],
+        ),
+        const SizedBox(height: 16),
+        
+        // 1. Premium Package (Hero Image)
+        _buildImageTierCard(
+          title: 'Premium Deep Clean',
+          price: '129',
+          features: ['All Rooms + Sanitization', 'Post-Service Warranty'],
+          isRecommended: true,
+          tag: 'MOST POPULAR',
+          imageUrl: 'https://sweepsouth.com/wp-content/uploads/2024/10/shutterstock_2479566829.jpg', // Image of a clean living room
+        ),
+        
+        const SizedBox(height: 12),
+        
+        // 2. Essential Package (Hero Image)
+        _buildImageTierCard(
+          title: 'Essential Maintenance',
+          price: '59',
+          features: ['Kitchen & Bathroom Focus', 'General Dusting'],
+          isRecommended: false,
+          imageUrl: 'https://images.unsplash.com/photo-1584622781564-1d987f7333c1?q=80&w=400', // Image of a bathroom/cleaning detail
+        ),
+      ],
+    );
+  }
+
+  Widget _buildImageTierCard({
+    required String title,
+    required String price,
+    required List<String> features,
+    required String imageUrl,
+    bool isRecommended = false,
+    String? tag,
+  }) {
+    return Container(
+      width: double.infinity,
+      height: 160, // Fixed height for a balanced look
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: isRecommended ? const Color(0xFF4361EE) : const Color(0xFFF3F4F6),
+          width: isRecommended ? 2 : 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          // 1. IMAGE LAYER (Right Aligned with Fade)
+          Positioned(
+            top: 0,
+            right: 0,
+            bottom: 0,
+            width: 180, // Fills a portion of the card
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topRight: Radius.circular(24),
+                bottomRight: Radius.circular(24),
+              ),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.network(imageUrl, fit: BoxFit.cover),
+                  // The "Canva Fade" Gradient
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          Colors.white,
+                          Colors.white.withOpacity(0.0), // Fades image as it gets to the right
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // 2. CONTENT LAYER (Left Aligned)
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Row(
+              children: [
+                // Text Side
+                Expanded(
+                  flex: 6,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (isRecommended && tag != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          margin: const EdgeInsets.only(bottom: 6),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF4361EE),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            tag,
+                            style: GoogleFonts.plusJakartaSans(
+                              color: Colors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                      Text(
+                        title,
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF111827),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      // Key features
+                      ...features.take(2).map((feature) => Row(
+                            children: [
+                              const Icon(Icons.check_circle_rounded, size: 12, color: Color(0xFF10B981)),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  feature,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 12,
+                                    color: const Color(0xFF6B7280),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )),
+                    ],
+                  ),
+                ),
+                
+                // Price & Action Side
+                const Spacer(flex: 1), // Creates space between content and price
+                Expanded(
+                  flex: 3,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        '\$$price',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w900,
+                          color: const Color(0xFF111827),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        height: 36, // Compact professional button
+                        child: ElevatedButton(
+                          onPressed: () {},
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: isRecommended ? const Color(0xFF4361EE) : const Color(0xFFF3F4F6),
+                            foregroundColor: isRecommended ? Colors.white : const Color(0xFF111827),
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          ),
+                          child: const Text('Add', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatusTag() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: const Color(0xFF10B981).withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        'TAX INCLUDED',
+        style: GoogleFonts.plusJakartaSans(
+          fontSize: 10,
+          fontWeight: FontWeight.w800,
+          color: const Color(0xFF10B981),
+          letterSpacing: 0.5,
         ),
       ),
     );
