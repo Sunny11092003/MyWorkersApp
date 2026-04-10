@@ -237,20 +237,21 @@ class ServiceCard extends StatelessWidget {
     );
   }
 
-  void _onBookPressed(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => DetailedServicesScreen(
-          title: title,
-          rating: rating,
-          duration: duration,
-          price: price,
-          imageAsset: imageUrl ?? imageAssetPath ?? "",
-        ),
+void _onBookPressed(BuildContext context) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => DetailedServicesScreen(
+        title: title,
+        rating: rating,
+        duration: duration,
+        price: price,
+        // This ensures an image is ALWAYS sent, even if null
+        imageAsset: imageUrl ?? imageAssetPath ?? "https://via.placeholder.com/300",
       ),
-    );
-  }
+    ),
+  );
+}
 
 Widget _getImageWidget() {
     // Priority 1: Check if URL exists
