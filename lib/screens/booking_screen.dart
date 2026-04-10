@@ -1,305 +1,337 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 
-class OrderSummaryScreen extends StatefulWidget {
-  final String serviceTitle;
-  final String price;
-  final String imageAsset;
-  final DateTime scheduledDateTime;
-
-  const OrderSummaryScreen({
-    super.key,
-    required this.serviceTitle,
-    required this.price,
-    required this.imageAsset,
-    required this.scheduledDateTime,
-  });
+class EliteCheckoutScreen extends StatefulWidget {
+  const EliteCheckoutScreen({super.key});
 
   @override
-  State<OrderSummaryScreen> createState() => _OrderSummaryScreenState();
+  State<EliteCheckoutScreen> createState() => _EliteCheckoutScreenState();
 }
 
-class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
-  // Brand Colors from your Home Screen
-  final Color primaryBlue = const Color(0xFF4361EE);
-  final Color textBlack = const Color(0xFF111827);
-  final Color textGrey = const Color(0xFF6B7280);
-  final Color bgGrey = const Color(0xFFF3F4F6); // Background contrast color
-  final Color successGreen = const Color(0xFF10B981);
+class _EliteCheckoutScreenState extends State<EliteCheckoutScreen> {
+  // Theme Palette
+  final Color _primaryBlue = const Color(0xFF4361EE);
+  final Color _bgWhite = Colors.white;
+  final Color _surfaceGrey = const Color(0xFFF8FAFC);
+  final Color _textHeading = const Color(0xFF0F172A);
+  final Color _textSubtle = const Color(0xFF64748B);
+
+  // State Variables
+  String _selectedAddress = "Home";
+  String _selectedPayment = "UPI";
+  double _selectedTip = 20.0;
+  final bool _isCouponApplied = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: bgGrey,
+      backgroundColor: _bgWhite,
       appBar: _buildAppBar(),
       body: Column(
         children: [
           Expanded(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const SizedBox(height: 12),
+                  _buildSectionLabel("SELECTED SERVICE"),
                   _buildServiceCard(),
-                  const SizedBox(height: 10),
-                  _buildScheduleCard(),
-                  const SizedBox(height: 10),
-                  _buildAddressCard(),
-                  const SizedBox(height: 10),
-                  _buildBillDetailCard(),
-                  const SizedBox(height: 10),
-                  _buildCancellationPolicy(),
-                  const SizedBox(height: 30),
+
+                  const SizedBox(height: 32),
+                  _buildSectionLabel("OFFERS & BENEFITS"),
+                  _buildCouponSection(),
+
+                  const SizedBox(height: 32),
+                  _buildSectionLabel("SERVICE INSTRUCTIONS"),
+                  _buildInstructionField(),
+
+                  const SizedBox(height: 32),
+                  _buildSectionLabel("APPRECIATE YOUR PRO"),
+                  _buildTipSection(),
+
+                  const SizedBox(height: 32),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildSectionLabel("SERVICE ADDRESS"),
+                      Text("+ Add New", style: TextStyle(color: _primaryBlue, fontWeight: FontWeight.bold, fontSize: 12)),
+                    ],
+                  ),
+                  _buildAddressSelection(),
+
+                  const SizedBox(height: 32),
+                  _buildSectionLabel("PAYMENT METHOD"),
+                  _buildPaymentMethods(),
+
+                  const SizedBox(height: 32),
+                  _buildPriceSummary(),
+
+                  const SizedBox(height: 24),
+                  _buildSecurityNote(),
+                  const SizedBox(height: 40),
                 ],
               ),
             ),
           ),
-          _buildZomatoStyleFooter(),
+          _buildConfirmButton(),
         ],
       ),
     );
   }
 
+  // --- UI SECTIONS ---
+
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      backgroundColor: Colors.white,
-      elevation: 0.5,
+      backgroundColor: _bgWhite,
+      elevation: 0,
+      centerTitle: true,
       leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios_new_rounded, color: textBlack, size: 20),
+        icon: Icon(Icons.arrow_back_ios_new_rounded, color: _textHeading, size: 20),
         onPressed: () => Navigator.pop(context),
       ),
-      title: Text(
-        "Confirm Order",
-        style: GoogleFonts.plusJakartaSans(
-          fontWeight: FontWeight.w800,
-          fontSize: 17,
-          color: textBlack,
+      title: Text("Checkout", 
+        style: GoogleFonts.plusJakartaSans(color: _textHeading, fontWeight: FontWeight.w800, fontSize: 16)),
+    );
+  }
+
+  Widget _buildSectionLabel(String text) {
+    return Text(text,
+      style: GoogleFonts.plusJakartaSans(
+        fontSize: 11, fontWeight: FontWeight.w900, color: _textSubtle.withOpacity(0.6), letterSpacing: 1.1));
+  }
+
+  Widget _buildServiceCard() {
+    return Container(
+      margin: const EdgeInsets.only(top: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: _bgWhite,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: _textSubtle.withOpacity(0.1)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            height: 64, width: 64,
+            decoration: BoxDecoration(
+              color: _surfaceGrey,
+              borderRadius: BorderRadius.circular(16),
+              image: const DecorationImage(image: NetworkImage("https://via.placeholder.com/150"), fit: BoxFit.cover),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Premium Dog Grooming", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 15, color: _textHeading)),
+                Text("Full Spa & Styling Package", style: TextStyle(color: _textSubtle, fontSize: 12)),
+                const SizedBox(height: 6),
+                Row(children: [
+                  Icon(Icons.star_rounded, color: Colors.amber[600], size: 14),
+                  const SizedBox(width: 4),
+                  const Text("4.9", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                ])
+              ],
+            ),
+          ),
+          Text("₹1,250", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w900, fontSize: 18, color: _primaryBlue)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCouponSection() {
+    return Container(
+      margin: const EdgeInsets.only(top: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: _bgWhite,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.green.withOpacity(0.5), width: 1.5),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.local_offer_rounded, color: Colors.green[600], size: 20),
+          const SizedBox(width: 12),
+          Text("PRO50", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 13, color: Colors.green[700])),
+          const SizedBox(width: 8),
+          Text("applied", style: TextStyle(color: Colors.green[600], fontSize: 13)),
+          const Spacer(),
+          Text("Remove", style: TextStyle(color: Colors.red[400], fontWeight: FontWeight.bold, fontSize: 12)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInstructionField() {
+    return Container(
+      margin: const EdgeInsets.only(top: 12),
+      child: TextField(
+        maxLines: 2,
+        style: const TextStyle(fontSize: 13),
+        decoration: InputDecoration(
+          hintText: "Add a note for your professional...",
+          hintStyle: TextStyle(color: _textSubtle.withOpacity(0.5)),
+          filled: true,
+          fillColor: _surfaceGrey,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
+          contentPadding: const EdgeInsets.all(16),
         ),
       ),
     );
   }
 
-  Widget _buildServiceCard() {
+  Widget _buildTipSection() {
     return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.all(20),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.network(widget.imageAsset, height: 70, width: 70, fit: BoxFit.cover),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.serviceTitle,
-                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 16, color: textBlack),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  "Professional Service • 1 Unit",
-                  style: GoogleFonts.plusJakartaSans(fontSize: 13, color: textGrey),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Icon(Icons.verified_user_rounded, color: successGreen, size: 14),
-                    const SizedBox(width: 4),
-                    Text(
-                      "Service Guarantee Included",
-                      style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w700, color: successGreen),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildScheduleCard() {
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: primaryBlue.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
-            child: Icon(Icons.timer_outlined, color: primaryBlue, size: 22),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Scheduled Time", style: GoogleFonts.plusJakartaSans(fontSize: 12, color: textGrey, fontWeight: FontWeight.w600)),
-                const SizedBox(height: 2),
-                Text(
-                  "${DateFormat('EEE, d MMM').format(widget.scheduledDateTime)} | ${DateFormat('hh:mm a').format(widget.scheduledDateTime)}",
-                  style: GoogleFonts.plusJakartaSans(fontSize: 15, fontWeight: FontWeight.w800, color: textBlack),
-                ),
-              ],
-            ),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text("Change", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, color: primaryBlue)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAddressCard() {
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.location_on_rounded, color: primaryBlue, size: 20),
-              const SizedBox(width: 8),
-              Text("Service Location", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 15)),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            "Home • 7th Block, HSR Layout, Bangalore, 560102",
-            style: GoogleFonts.plusJakartaSans(fontSize: 14, color: textBlack, fontWeight: FontWeight.w500, height: 1.4),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBillDetailCard() {
-    double base = double.tryParse(widget.price.replaceAll(',', '')) ?? 0.0;
-    double tax = base * 0.18; // GST 18%
-    double platformFee = 2.0;
-    double total = base + tax + platformFee;
-
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text("Bill Details", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 15)),
-          const SizedBox(height: 16),
-          _billRow("Item total", "\$${base.toStringAsFixed(2)}"),
-          _billRow("Taxes and Service Fee", "\$${tax.toStringAsFixed(2)}"),
-          _billRow("Platform fee", "\$${platformFee.toStringAsFixed(2)}"),
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 12),
-            child: Divider(thickness: 1, color: Color(0xFFF3F4F6)),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("Total Payable", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w900, fontSize: 16, color: textBlack)),
-              Text("\$${total.toStringAsFixed(2)}", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w900, fontSize: 18, color: textBlack)),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _billRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      margin: const EdgeInsets.only(top: 12),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: GoogleFonts.plusJakartaSans(color: textGrey, fontSize: 13, fontWeight: FontWeight.w500)),
-          Text(value, style: GoogleFonts.plusJakartaSans(color: textBlack, fontWeight: FontWeight.w600, fontSize: 13)),
-        ],
+        children: [10.0, 20.0, 50.0, 0.0].map((amt) {
+          bool isSelected = _selectedTip == amt;
+          return GestureDetector(
+            onTap: () => setState(() => _selectedTip = amt),
+            child: Container(
+              width: 75,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              decoration: BoxDecoration(
+                color: isSelected ? _primaryBlue : _bgWhite,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: isSelected ? _primaryBlue : _textSubtle.withOpacity(0.1)),
+              ),
+              child: Center(
+                child: Text(amt == 0 ? "Other" : "₹$amt",
+                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 13, color: isSelected ? Colors.white : _textHeading)),
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
 
-  Widget _buildCancellationPolicy() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+  Widget _buildAddressSelection() {
+    return Column(
+      children: [
+        const SizedBox(height: 12),
+        _addressOption("Home", "1248 Oakwood Ave, Sunset District", Icons.home_filled),
+        const SizedBox(height: 12),
+        _addressOption("Work", "Salesforce Tower, 415 Mission St", Icons.work_rounded),
+      ],
+    );
+  }
+
+  Widget _addressOption(String title, String desc, IconData icon) {
+    bool isSelected = _selectedAddress == title;
+    return GestureDetector(
+      onTap: () => setState(() => _selectedAddress = title),
       child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.grey[200]!)),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isSelected ? _bgWhite : _surfaceGrey,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: isSelected ? _primaryBlue : Colors.transparent, width: 2),
+        ),
         child: Row(
           children: [
-            const Icon(Icons.info_outline, size: 16, color: Colors.grey),
-            const SizedBox(width: 8),
+            Icon(icon, color: isSelected ? _primaryBlue : _textSubtle, size: 22),
+            const SizedBox(width: 16),
             Expanded(
-              child: Text(
-                "Cancellation policy applies. Review before booking.",
-                style: GoogleFonts.plusJakartaSans(fontSize: 11, color: textGrey, fontWeight: FontWeight.w600),
-              ),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(title, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 14)),
+                Text(desc, style: TextStyle(color: _textSubtle, fontSize: 12), overflow: TextOverflow.ellipsis),
+              ]),
             ),
+            if (isSelected) Icon(Icons.check_circle_rounded, color: _primaryBlue, size: 20),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildZomatoStyleFooter() {
+  Widget _buildPaymentMethods() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 34),
+      margin: const EdgeInsets.only(top: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 20, offset: const Offset(0, -5))],
+        color: _bgWhite, borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: _textSubtle.withOpacity(0.1)),
       ),
-      child: Row(
+      child: Column(
         children: [
-          Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "\$${widget.price}",
-                  style: GoogleFonts.plusJakartaSans(fontSize: 20, fontWeight: FontWeight.w900, color: textBlack),
-                ),
-                Text(
-                  "VIEW DETAILED BILL",
-                  style: GoogleFonts.plusJakartaSans(fontSize: 10, fontWeight: FontWeight.w800, color: primaryBlue, letterSpacing: 0.5),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 52,
-            width: 180,
-            child: ElevatedButton(
-              onPressed: () {
-                HapticFeedback.heavyImpact();
-                // Final API Call here
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: primaryBlue,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text("Place Order", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 16)),
-                  const SizedBox(width: 8),
-                  const Icon(Icons.arrow_forward_rounded, size: 18),
-                ],
-              ),
-            ),
-          ),
+          _paymentTile("UPI (GPay / PhonePe)", Icons.bolt_rounded, isSelected: true),
+          Divider(height: 1, color: _textSubtle.withOpacity(0.05)),
+          _paymentTile("Credit / Debit Card", Icons.credit_card),
         ],
+      ),
+    );
+  }
+
+  Widget _paymentTile(String title, IconData icon, {bool isSelected = false}) {
+    return ListTile(
+      leading: Icon(icon, color: _textHeading, size: 22),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+      trailing: Icon(isSelected ? Icons.radio_button_checked_rounded : Icons.radio_button_off_rounded, 
+                     color: isSelected ? _primaryBlue : _textSubtle.withOpacity(0.3)),
+    );
+  }
+
+  Widget _buildPriceSummary() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(color: _surfaceGrey, borderRadius: BorderRadius.circular(24)),
+      child: Column(
+        children: [
+          _priceRow("Subtotal", "₹1,250.00"),
+          _priceRow("Platform Fee", "₹25.00"),
+          _priceRow("GST (18%)", "₹225.00"),
+          if (_selectedTip > 0) _priceRow("Tip", "₹$_selectedTip"),
+          const Padding(padding: EdgeInsets.symmetric(vertical: 16), child: Divider(height: 1)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("Total Amount", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 15)),
+              Text("₹${(1500 + _selectedTip).toStringAsFixed(0)}", 
+                style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w900, fontSize: 20, color: _textHeading)),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _priceRow(String label, String val) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        Text(label, style: TextStyle(color: _textSubtle, fontWeight: FontWeight.w600, fontSize: 13)),
+        Text(val, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13)),
+      ]),
+    );
+  }
+
+  Widget _buildSecurityNote() {
+    return Center(child: Row(mainAxisSize: MainAxisSize.min, children: [
+      Icon(Icons.lock_rounded, size: 12, color: _textSubtle),
+      const SizedBox(width: 8),
+      Text("SECURE ENCRYPTED CHECKOUT", 
+        style: GoogleFonts.plusJakartaSans(fontSize: 10, fontWeight: FontWeight.w800, color: _textSubtle, letterSpacing: 0.5)),
+    ]));
+  }
+
+  Widget _buildConfirmButton() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(24, 20, 24, 40),
+      decoration: BoxDecoration(color: _bgWhite, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 20, offset: const Offset(0, -5))]),
+      child: ElevatedButton(
+        onPressed: () {},
+        style: ElevatedButton.styleFrom(
+          backgroundColor: _primaryBlue, minimumSize: const Size(double.infinity, 56),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), elevation: 0),
+        child: const Text("Confirm Booking", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16)),
       ),
     );
   }
