@@ -4,6 +4,7 @@ import '../widgets/home/welcome_header.dart';
 import '../widgets/home/search_bar.dart';
 import '../widgets/home/offer_card.dart';
 import '../widgets/home/categories_section.dart';
+import 'Account.dart';
 import '../widgets/home/service_card.dart';
 import '../screens/services_screen.dart'; // adjust path if needed
 
@@ -14,15 +15,20 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      drawer: _buildDrawer(context),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: false,
-        leading: IconButton(
-          icon: const Icon(Icons.menu_rounded, color: Colors.black87),
-          iconSize: 28,
-          onPressed: () {},
-        ),
+leading: Builder(
+  builder: (context) => IconButton(
+    icon: const Icon(Icons.menu_rounded, color: Colors.black87),
+    iconSize: 28,
+    onPressed: () {
+      Scaffold.of(context).openDrawer(); // 🔥 opens drawer
+    },
+  ),
+),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -54,14 +60,24 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: CircleAvatar(
-              radius: 20,
-              backgroundColor: const Color(0xFFF3F4F6),
-              child: const Icon(Icons.person_outline_rounded, size: 24, color: Colors.black87),
-            ),
-          ),
+Padding(
+  padding: const EdgeInsets.only(right: 16),
+  child: GestureDetector(
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const AccountScreen(), // 👈 your account page
+        ),
+      );
+    },
+    child: CircleAvatar(
+      radius: 20,
+      backgroundColor: const Color(0xFFF3F4F6),
+      child: const Icon(Icons.person_outline_rounded, size: 24, color: Colors.black87),
+    ),
+  ),
+),
         ],
       ),
       body: SingleChildScrollView(
@@ -166,6 +182,121 @@ TextButton(
       ),
     );
   }
+
+   Widget _buildDrawer(BuildContext context) {
+  return Drawer(
+    backgroundColor: Colors.white,
+    child: SafeArea(
+      child: Column(
+        children: [
+          // 🔥 TOP PROFILE SECTION
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: const BoxDecoration(
+              color: Color(0xFF4361EE),
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(24),
+                bottomRight: Radius.circular(24),
+              ),
+            ),
+            child: Row(
+              children: [
+                const CircleAvatar(
+                  radius: 28,
+                  backgroundColor: Colors.white,
+                  child: Icon(Icons.person, color: Colors.black87),
+                ),
+                const SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Text(
+                      "Sunny Samuel",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      "sunny@email.com",
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          // 🔹 MENU ITEMS
+          _drawerItem(Icons.home_rounded, "Home", () {
+            Navigator.pop(context);
+          }),
+
+          _drawerItem(Icons.miscellaneous_services_rounded, "Services", () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ServicesScreen(
+                  categoryName: "All Services",
+                  categoryId: "all",
+                ),
+              ),
+            );
+          }),
+
+          _drawerItem(Icons.person_outline, "My Account", () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const AccountScreen(),
+              ),
+            );
+          }),
+
+          _drawerItem(Icons.history, "Bookings", () {}),
+
+          _drawerItem(Icons.support_agent, "Support", () {}),
+
+          const Spacer(),
+
+          // 🔥 LOGOUT
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: _drawerItem(Icons.logout, "Logout", () {
+              Navigator.pop(context);
+              // add logout logic here
+            }, isLogout: true),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget _drawerItem(IconData icon, String title, VoidCallback onTap,
+    {bool isLogout = false}) {
+  return ListTile(
+    leading: Icon(
+      icon,
+      color: isLogout ? Colors.red : Colors.black87,
+    ),
+    title: Text(
+      title,
+      style: TextStyle(
+        fontWeight: FontWeight.w600,
+        color: isLogout ? Colors.red : Colors.black87,
+      ),
+    ),
+    onTap: onTap,
+  );
+}
 }
 
 class UrgencyTimerAd extends StatelessWidget {
@@ -330,6 +461,8 @@ class PackageSection extends StatelessWidget {
     );
   }
 
+
+
   Widget _buildImageTierCard({
     required String title,
     required String price,
@@ -491,6 +624,8 @@ class PackageSection extends StatelessWidget {
       ),
     );
   }
+
+  
 
   Widget _buildStatusTag() {
     return Container(
