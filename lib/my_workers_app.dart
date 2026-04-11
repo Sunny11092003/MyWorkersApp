@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:my_workers_app/screens/home_screen.dart';
+import 'package:my_workers_app/screens/onboarding_screen.dart';
 
 class MyWorkersApp extends StatelessWidget {
   const MyWorkersApp({super.key});
@@ -18,7 +18,7 @@ class MyWorkersApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.white,
       ),
       debugShowCheckedModeBanner: false,
-      home: const HomeScreen(),
+      home: const ProfessionalOnboardingScreen(),
     );
   }
 }

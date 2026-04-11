@@ -17,6 +17,7 @@ class HomeScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       drawer: _buildDrawer(context),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: false,
@@ -29,36 +30,49 @@ leading: Builder(
     },
   ),
 ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Your Location',
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 12, 
-                color: Colors.grey[600],
-                fontWeight: FontWeight.w500
-              ),
+title: Row(
+  crossAxisAlignment: CrossAxisAlignment.center,
+  children: [
+    Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'Your Location',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 12,
+              color: Colors.grey.shade600,
+              fontWeight: FontWeight.w500,
             ),
-            Row(
-              children: [
-                Text(
-                  'Bangalore, India',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.black87,
-                  ),
-                ),
-                const Icon(
-                  Icons.keyboard_arrow_down_rounded,
-                  size: 18,
-                  color: Color(0xFF4361EE),
-                ),
-              ],
-            ),
-          ],
+          ),
+          const SizedBox(height: 2),
+Row(
+  children: [
+    Flexible( // 👈 instead of Expanded
+      child: Text(
+        'Bangalore, India',
+        overflow: TextOverflow.ellipsis,
+        style: GoogleFonts.plusJakartaSans(
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
+          color: Colors.black87,
         ),
+      ),
+    ),
+    const SizedBox(width: 4),
+    const Icon(
+      Icons.keyboard_arrow_down_rounded,
+      size: 18,
+      color: Color(0xFF4361EE),
+    ),
+  ],
+),
+        ],
+      ),
+    ),
+  ],
+),
         actions: [
 Padding(
   padding: const EdgeInsets.only(right: 16),
@@ -180,8 +194,143 @@ TextButton(
           ),
         ),
       ),
+    //  bottomNavigationBar: _buildBottomNav(context),
     );
   }
+
+Widget _buildBottomNav(BuildContext context) {
+  return Container(
+    height: 70,
+    padding: const EdgeInsets.symmetric(horizontal: 8),
+    decoration: BoxDecoration(
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(48),
+        topRight: Radius.circular(48),
+      ),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.05),
+          blurRadius: 12,
+          offset: const Offset(0, -2),
+        )
+      ],
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+
+        // 🔵 Electrical (Primary Highlight)
+        _navItem(
+          icon: Icons.electrical_services,
+          label: "Electrical",
+          color:Colors.black54,
+          onTap: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ServicesScreen(
+                  categoryName: "Electrical",
+                  categoryId: "electrical",
+                ),
+              ),
+            );
+          },
+        ),
+
+        // ⚫ Plumbing
+        _navItem(
+          icon: Icons.plumbing,
+          label: "Plumbing",
+          color: Colors.black54,
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ServicesScreen(
+                  categoryName: "Plumbing",
+                  categoryId: "plumbing",
+                ),
+              ),
+            );
+          },
+        ),
+
+        // 🟠 Offers (Special Highlight)
+        _navItem(
+          icon: Icons.local_offer,
+          label: "Offers",
+          color: const Color(0xFFFFA500),
+          onTap: () {
+            // TODO: Add Offers Screen
+          },
+        ),
+
+        // ⚫ Carpentry
+        _navItem(
+          icon: Icons.carpenter,
+          label: "Carpentry",
+          color: Colors.black54,
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ServicesScreen(
+                  categoryName: "Carpentry",
+                  categoryId: "carpentry",
+                ),
+              ),
+            );
+          },
+        ),
+
+        // ⚫ Painting
+        _navItem(
+          icon: Icons.format_paint,
+          label: "Painting",
+          color: Colors.black54,
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ServicesScreen(
+                  categoryName: "Painting",
+                  categoryId: "painting",
+                ),
+              ),
+            );
+          },
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _navItem({
+  required IconData icon,
+  required String label,
+  required VoidCallback onTap,
+  required Color color,
+}) {
+  return GestureDetector(
+    onTap: onTap,
+    behavior: HitTestBehavior.opaque,
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(icon, size: 24, color: color),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            color: color,
+          ),
+        ),
+      ],
+    ),
+  );
+}
 
    Widget _buildDrawer(BuildContext context) {
   return Drawer(

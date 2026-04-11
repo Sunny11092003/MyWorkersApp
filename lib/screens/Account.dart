@@ -38,7 +38,7 @@ class AccountScreen extends StatelessWidget {
                   const SizedBox(height: 24),
                   _buildSectionLabel("PAYMENTS & WALLET"),
                   _buildActionGroup([
-                    _actionTile(Icons.account_balance_wallet_outlined, "Froinex Wallet", "Current balance: ₹450"),
+                    _actionTile(Icons.account_balance_wallet_outlined, "My Wallet", "Current balance: ₹450"),
                     _actionTile(Icons.payment_rounded, "Saved Methods", "Cards and UPI"),
                     _actionTile(Icons.confirmation_number_outlined, "Offers & Coupons", "View available discounts"),
                   ]),
