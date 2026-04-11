@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'home_screen.dart';
+import 'Signin.dart';
 
 class ProfessionalOnboardingScreen extends StatefulWidget {
   const ProfessionalOnboardingScreen({super.key});
@@ -179,7 +180,7 @@ class _ProfessionalOnboardingScreenState extends State<ProfessionalOnboardingScr
   void _finishOnboarding() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const HomeScreen()),
+      MaterialPageRoute(builder: (context) => const SignInScreen()),
     );
   }
 

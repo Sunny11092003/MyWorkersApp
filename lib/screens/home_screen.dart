@@ -6,7 +6,8 @@ import '../widgets/home/offer_card.dart';
 import '../widgets/home/categories_section.dart';
 import 'Account.dart';
 import '../widgets/home/service_card.dart';
-import '../screens/services_screen.dart'; // adjust path if needed
+import '../screens/services_screen.dart';
+import 'package:flutter/services.dart'; // adjust path if needed
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -15,61 +16,53 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      drawer: _buildDrawer(context),
+      //drawer: _buildDrawer(context),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: false,
-leading: Builder(
-  builder: (context) => IconButton(
-    icon: const Icon(Icons.menu_rounded, color: Colors.black87),
-    iconSize: 28,
-    onPressed: () {
-      Scaffold.of(context).openDrawer(); // 🔥 opens drawer
-    },
-  ),
-),
+          systemOverlayStyle: SystemUiOverlayStyle.dark,
+//leading: Builder(
+  //builder: (context) => IconButton(
+    //icon: const Icon(Icons.menu_rounded, color: Colors.black87),
+    //iconSize: 28,
+   // onPressed: () {
+   //   Scaffold.of(context).openDrawer(); // 🔥 opens drawer
+   // },
+  //),
+//),
 title: Row(
-  crossAxisAlignment: CrossAxisAlignment.center,
+  crossAxisAlignment: CrossAxisAlignment.start,
   children: [
+
     Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'Your Location',
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 12,
-              color: Colors.grey.shade600,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 2),
-Row(
+      child: Row(
   children: [
-    Flexible( // 👈 instead of Expanded
+    const Icon(
+      Icons.location_on_rounded,
+      size: 20,
+      color: Color(0xFF4361EE),
+    ),
+    const SizedBox(width: 6),
+    Expanded(
       child: Text(
-        'Bangalore, India',
+        '110, Near Alfa Public Sc...',
         overflow: TextOverflow.ellipsis,
         style: GoogleFonts.plusJakartaSans(
           fontSize: 16,
-          fontWeight: FontWeight.w700,
-          color: Colors.black87,
+          fontWeight: FontWeight.w800,
+          color: const Color(0xFF111827),
         ),
       ),
     ),
-    const SizedBox(width: 4),
     const Icon(
       Icons.keyboard_arrow_down_rounded,
       size: 18,
       color: Color(0xFF4361EE),
     ),
   ],
-),
-        ],
-      ),
+)
     ),
   ],
 ),
@@ -102,7 +95,7 @@ Padding(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // 1. Welcome Text & Search
-              const WelcomeHeader(),
+              const UrgencyTimerAd(),
               const SizedBox(height: 20),
               const SearchBarWidget(),
               const SizedBox(height: 24),
@@ -113,11 +106,6 @@ Padding(
 
               // 3. Categories (Circular Professional Design)
               const CategoriesSection(), // Added back as requested
-              const SizedBox(height: 32),
-
-              // THE URGENCY AD (Electrical Services)
-              const UrgencyTimerAd(),
-
               const SizedBox(height: 32),
 
               // 6. Bottom spacing for navigation bar clarity
@@ -194,23 +182,24 @@ TextButton(
           ),
         ),
       ),
-    //  bottomNavigationBar: _buildBottomNav(context),
+     // bottomNavigationBar: _buildBottomNav(context),
     );
   }
 
 Widget _buildBottomNav(BuildContext context) {
   return Container(
-    height: 70,
+    height: 68, // 👈 slightly reduced (75 → 68)
     padding: const EdgeInsets.symmetric(horizontal: 8),
     decoration: BoxDecoration(
+      color: Colors.white,
       borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(48),
-        topRight: Radius.circular(48),
+        topLeft: Radius.circular(44), // 👈 slightly reduced
+        topRight: Radius.circular(44),
       ),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.05),
-          blurRadius: 12,
+          color: Colors.black.withOpacity(0.045),
+          blurRadius: 10,
           offset: const Offset(0, -2),
         )
       ],
@@ -219,86 +208,73 @@ Widget _buildBottomNav(BuildContext context) {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
 
-        // 🔵 Electrical (Primary Highlight)
         _navItem(
           icon: Icons.electrical_services,
           label: "Electrical",
-          color:Colors.black54,
-          onTap: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const ServicesScreen(
-                  categoryName: "Electrical",
-                  categoryId: "electrical",
-                ),
-              ),
-            );
-          },
+          color: Colors.black54,
+          onTap: () {},
         ),
 
-        // ⚫ Plumbing
         _navItem(
           icon: Icons.plumbing,
           label: "Plumbing",
           color: Colors.black54,
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const ServicesScreen(
-                  categoryName: "Plumbing",
-                  categoryId: "plumbing",
+          onTap: () {},
+        ),
+
+        // 🔥 CENTER OFFER (slightly adjusted, still big)
+        Transform.translate(
+          offset: const Offset(0, -5), // 👈 slightly less lift
+          child: GestureDetector(
+            onTap: () {},
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(11), // 👈 slightly smaller
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFA500),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFFFA500).withOpacity(0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 3),
+                      )
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.local_offer,
+                    color: Colors.white,
+                    size: 26, // 👈 slightly smaller
+                  ),
                 ),
-              ),
-            );
-          },
+                const SizedBox(height: 3),
+                const Text(
+                  "Offers",
+                  style: TextStyle(
+                    fontSize: 10.5, // 👈 slight reduction
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFFFFA500),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
 
-        // 🟠 Offers (Special Highlight)
-        _navItem(
-          icon: Icons.local_offer,
-          label: "Offers",
-          color: const Color(0xFFFFA500),
-          onTap: () {
-            // TODO: Add Offers Screen
-          },
-        ),
-
-        // ⚫ Carpentry
         _navItem(
           icon: Icons.carpenter,
           label: "Carpentry",
           color: Colors.black54,
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const ServicesScreen(
-                  categoryName: "Carpentry",
-                  categoryId: "carpentry",
-                ),
-              ),
-            );
-          },
+          onTap: () {},
         ),
 
-        // ⚫ Painting
         _navItem(
           icon: Icons.format_paint,
           label: "Painting",
           color: Colors.black54,
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const ServicesScreen(
-                  categoryName: "Painting",
-                  categoryId: "painting",
-                ),
-              ),
-            );
-          },
+          onTap: () {},
         ),
       ],
     ),
@@ -317,12 +293,12 @@ Widget _navItem({
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(icon, size: 24, color: color),
-        const SizedBox(height: 4),
+        Icon(icon, size: 22, color: color), // 👈 24 → 22
+        const SizedBox(height: 3),
         Text(
           label,
           style: TextStyle(
-            fontSize: 11,
+            fontSize: 10.5, // 👈 11 → 10.5
             fontWeight: FontWeight.w600,
             color: color,
           ),
@@ -331,7 +307,6 @@ Widget _navItem({
     ),
   );
 }
-
    Widget _buildDrawer(BuildContext context) {
   return Drawer(
     backgroundColor: Colors.white,
