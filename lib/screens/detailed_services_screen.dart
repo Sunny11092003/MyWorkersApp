@@ -287,7 +287,7 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "\₹ ${widget.price}",
+                    "₹ ${widget.price}",
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 16,
                       fontWeight: FontWeight.w900,
@@ -345,84 +345,6 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
     );
   }
 
-  Widget _buildInclusionsGrid() {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: _buildInclusionCard(
-                "Living Spaces",
-                "Upholstery vacuuming, glass polishing & dusting.",
-                Icons.weekend_rounded,
-                const Color(0xFFF0F3FF),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildInclusionCard(
-                "Kitchen Detail",
-                "Appliance exteriors, degreasing & countertop shine.",
-                Icons.soup_kitchen_rounded,
-                const Color(0xFFE0F7F6),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        _buildInclusionCard(
-          "Bathroom Disinfection",
-          "Deep scrub of tiles, grout, fixtures, and full sanitization of all surfaces for a germ-free finish.",
-          Icons.sanitizer_rounded,
-          const Color(0xFFF5F3FF),
-          isWide: true,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildInclusionCard(String title, String subtitle, IconData icon, Color bg, {bool isWide = false}) {
-    return Container(
-      width: isWide ? double.infinity : null,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.black.withOpacity(0.02)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.6),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, size: 20, color: _brandBlue),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            title,
-            style: GoogleFonts.plusJakartaSans(
-              fontWeight: FontWeight.w800,
-              fontSize: 14,
-              color: _darkText,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            subtitle,
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 11,
-              color: Colors.grey[700],
-              height: 1.5,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   // --- CUSTOM BOOKING LOGIC ---
 

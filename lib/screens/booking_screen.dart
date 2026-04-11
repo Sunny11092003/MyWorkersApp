@@ -18,9 +18,7 @@ class _EliteCheckoutScreenState extends State<EliteCheckoutScreen> {
 
   // State Variables
   String _selectedAddress = "Home";
-  String _selectedPayment = "UPI";
   double _selectedTip = 20.0;
-  final bool _isCouponApplied = true;
 
   @override
   Widget build(BuildContext context) {
@@ -120,7 +118,7 @@ class _EliteCheckoutScreenState extends State<EliteCheckoutScreen> {
             decoration: BoxDecoration(
               color: _surfaceGrey,
               borderRadius: BorderRadius.circular(16),
-              image: const DecorationImage(image: NetworkImage("https://via.placeholder.com/150"), fit: BoxFit.cover),
+              image: const DecorationImage(image: NetworkImage("https://dioncomfort.com/wp-content/uploads/2024/10/ac-repair.jpg"), fit: BoxFit.cover),
             ),
           ),
           const SizedBox(width: 16),
@@ -253,22 +251,28 @@ class _EliteCheckoutScreenState extends State<EliteCheckoutScreen> {
     );
   }
 
-  Widget _buildPaymentMethods() {
-    return Container(
-      margin: const EdgeInsets.only(top: 12),
-      decoration: BoxDecoration(
-        color: _bgWhite, borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: _textSubtle.withOpacity(0.1)),
-      ),
-      child: Column(
-        children: [
-          _paymentTile("UPI (GPay / PhonePe)", Icons.bolt_rounded, isSelected: true),
-          Divider(height: 1, color: _textSubtle.withOpacity(0.05)),
-          _paymentTile("Credit / Debit Card", Icons.credit_card),
-        ],
-      ),
-    );
-  }
+Widget _buildPaymentMethods() {
+  return Container(
+    margin: const EdgeInsets.only(top: 12),
+    decoration: BoxDecoration(
+      color: _bgWhite,
+      borderRadius: BorderRadius.circular(24),
+      border: Border.all(color: _textSubtle.withOpacity(0.1)),
+    ),
+    child: Column(
+      children: [
+        _paymentTile("UPI (GPay / PhonePe)", Icons.bolt_rounded, isSelected: true),
+        Divider(height: 1, color: _textSubtle.withOpacity(0.05)),
+
+        _paymentTile("Credit / Debit Card", Icons.credit_card),
+        Divider(height: 1, color: _textSubtle.withOpacity(0.05)),
+
+        // ✅ Added Cash option
+        _paymentTile("Cash on Delivery", Icons.payments_rounded),
+      ],
+    ),
+  );
+}
 
   Widget _paymentTile(String title, IconData icon, {bool isSelected = false}) {
     return ListTile(
