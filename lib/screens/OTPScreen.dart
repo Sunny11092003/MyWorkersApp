@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'home_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class OTPScreen extends StatefulWidget {
-  const OTPScreen({super.key});
+  final String verificationId;
+  final String phone;
+
+  const OTPScreen({
+    super.key,
+    required this.verificationId,
+    required this.phone,
+  });
 
   @override
   State<OTPScreen> createState() => _OTPScreenState();
@@ -13,6 +22,9 @@ class _OTPScreenState extends State<OTPScreen> {
   final Color primaryBlue = const Color(0xFF4361EE);
   final Color darkGrey = const Color(0xFF111827);
   final Color bodyText = const Color(0xFF6B7280);
+
+  List<TextEditingController> otpControllers =
+    List.generate(6, (_) => TextEditingController());
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +59,7 @@ class _OTPScreenState extends State<OTPScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  "Sent to +91 98765 43210",
+                  "Sent to +91 ${widget.phone}",
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 15,
                     color: bodyText,
@@ -65,6 +77,7 @@ class _OTPScreenState extends State<OTPScreen> {
                     (index) => SizedBox(
                       width: 45,
                       child: TextField(
+                        controller: otpControllers[index],
                         autofocus: index == 0,
                         onChanged: (value) {
                           if (value.length == 1 && index < 5) {
@@ -126,12 +139,56 @@ class _OTPScreenState extends State<OTPScreen> {
                   width: double.infinity,
                   height: 56,
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => const HomeScreen()),
-                      );
-                    },
+onPressed: () async {
+  String otp = otpControllers.map((e) => e.text).join();
+
+  if (otp.length < 6) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Enter full OTP")),
+    );
+    return;
+  }
+
+  try {
+    // ✅ VERIFY OTP
+    await FirebaseAuth.instance.signInWithCredential(
+      PhoneAuthProvider.credential(
+        verificationId: widget.verificationId,
+        smsCode: otp,
+      ),
+    );
+
+    // ✅ GET USER
+final user = FirebaseAuth.instance.currentUser;
+
+if (user == null) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text("User not authenticated")),
+  );
+  return;
+}
+
+final DatabaseReference dbRef =
+    FirebaseDatabase.instance.ref("users/${user.uid}");
+
+await dbRef.set({
+  "uid": user.uid,
+  "phone": widget.phone,
+  "createdAt": DateTime.now().toString(),
+});
+
+    // ✅ NAVIGATE
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const HomeScreen()),
+    );
+
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Invalid OTP")),
+    );
+  }
+},
                     style: ElevatedButton.styleFrom(
                       backgroundColor: primaryBlue,
                       foregroundColor: Colors.white,

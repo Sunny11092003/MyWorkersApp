@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../widgets/home/welcome_header.dart';
 import '../widgets/home/search_bar.dart';
 import '../widgets/home/offer_card.dart';
 import '../widgets/home/categories_section.dart';
@@ -47,7 +46,7 @@ title: Row(
     const SizedBox(width: 6),
     Expanded(
       child: Text(
-        '110, Near Alfa Public Sc...',
+        '110, Near Alfa Public Scho...',
         overflow: TextOverflow.ellipsis,
         style: GoogleFonts.plusJakartaSans(
           fontSize: 16,

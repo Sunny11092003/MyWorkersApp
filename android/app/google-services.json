@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "93618104323",
+    "firebase_url": "https://myworkers-12eaa-default-rtdb.firebaseio.com",
+    "project_id": "myworkers-12eaa",
+    "storage_bucket": "myworkers-12eaa.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:93618104323:android:301e22a0c76278d40fc636",
+        "android_client_info": {
+          "package_name": "com.example.my_workers_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8Yf2GREOS20w-eev5em79ONrZg5UUIqQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

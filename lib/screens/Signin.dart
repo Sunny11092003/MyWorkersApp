@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'OTPScreen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -14,6 +15,7 @@ class _SignInScreenState extends State<SignInScreen> {
   final Color primaryBlue = const Color(0xFF4361EE);
   final Color darkGrey = const Color(0xFF111827);
   final Color bodyText = const Color(0xFF6B7280);
+  TextEditingController phoneController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -124,6 +126,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           const SizedBox(width: 12),
                           Expanded(
                             child: TextField(
+                              controller: phoneController,
                               keyboardType: TextInputType.phone,
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 16,
@@ -154,12 +157,44 @@ class _SignInScreenState extends State<SignInScreen> {
                       width: double.infinity,
                       height: 56,
                       child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => const OTPScreen()),
-                          );
-                        },
+onPressed: () async {
+  String phone = phoneController.text.trim();
+
+  if (phone.isEmpty || phone.length < 10) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Enter valid phone number")),
+    );
+    return;
+  }
+
+  await FirebaseAuth.instance.verifyPhoneNumber(
+    phoneNumber: '+91$phone',
+
+    verificationCompleted: (PhoneAuthCredential credential) async {
+      await FirebaseAuth.instance.signInWithCredential(credential);
+    },
+
+    verificationFailed: (FirebaseAuthException e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message ?? "Error")),
+      );
+    },
+
+    codeSent: (String verificationId, int? resendToken) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => OTPScreen(
+            verificationId: verificationId,
+            phone: phone,
+          ),
+        ),
+      );
+    },
+
+    codeAutoRetrievalTimeout: (String verificationId) {},
+  );
+},
                         style: ElevatedButton.styleFrom(
                           backgroundColor: primaryBlue,
                           foregroundColor: Colors.white,
