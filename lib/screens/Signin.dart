@@ -106,7 +106,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           Row(
                             children: [
                               Image.network(
-                                "https://upload.wikimedia.org/wikipedia/en/thumb/4/41/Flag_of_India.svg/1200px-Flag_of_India.svg.png",
+                                "https://flagcdn.com/w40/in.png",
                                 width: 24,
                               ),
                               const SizedBox(width: 8),

@@ -7,14 +7,174 @@ import 'Account.dart';
 import '../widgets/home/service_card.dart';
 import '../screens/services_screen.dart';
 import 'package:flutter/services.dart'; // adjust path if needed
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:location/location.dart' as loc;
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String address = "Enable Location";
+  bool showLocationButton = true;
+
+@override
+void initState() {
+  super.initState();
+}
+
+
+Future<void> getLocation() async {
+  print("🚀 LOCATION STARTED");
+
+loc.Location location = loc.Location();
+
+bool serviceEnabled = await location.serviceEnabled();
+
+if (!serviceEnabled) {
+  serviceEnabled = await location.requestService(); // 🔥 THIS SHOWS SYSTEM POPUP
+
+  if (!serviceEnabled) {
+    setState(() {
+      address = "Location is Off";
+      showLocationButton = true;
+    });
+    print("❌ GPS STILL OFF");
+    return;
+  }
+}
+
+LocationPermission permission = await Geolocator.checkPermission();
+
+// 🔥 FIRST TIME REQUEST
+if (permission == LocationPermission.denied) {
+  permission = await Geolocator.requestPermission();
+}
+
+// ❌ STILL DENIED
+if (permission == LocationPermission.denied) {
+  setState(() {
+    address = "Enable Location";
+  });
+  return;
+}
+
+// ❌ DENIED FOREVER
+if (permission == LocationPermission.deniedForever) {
+  setState(() {
+    address = "Enable location in settings";
+  });
+
+  await Geolocator.openAppSettings();
+  return;
+}
+
+  // ✅ GET POSITION
+  Position position = await Geolocator.getCurrentPosition(
+    desiredAccuracy: LocationAccuracy.high,
+  );
+
+  print("✅ LAT: ${position.latitude}, LNG: ${position.longitude}");
+
+  // ✅ GET ADDRESS
+  List<Placemark> placemarks = await placemarkFromCoordinates(
+    position.latitude,
+    position.longitude,
+  );
+
+  print("✅ PLACEMARK FETCHED");
+
+Placemark place = placemarks.first;
+
+String shortAddress = "${place.subLocality}, ${place.locality}";
+List<String?> addressParts = [
+  place.street,
+  place.subLocality,
+  place.locality,
+  place.subAdministrativeArea,
+  place.administrativeArea,
+  place.postalCode,
+  place.country,
+];
+
+addressParts = addressParts
+    .where((e) => e != null && e.isNotEmpty && !e.contains('+'))
+    .toSet()
+    .toList();
+
+String fullAddress = addressParts.cast<String>().join(", ");
+
+setState(() {
+  address = fullAddress;
+  showLocationButton = false;
+});
+
+  print("📍 ADDRESS: $fullAddress");
+
+  // ✅ GET USER
+  final user = FirebaseAuth.instance.currentUser;
+  print("👤 USER: $user");
+
+  if (user != null) {
+    print("💾 SAVING TO DB...");
+
+    final dbRef = FirebaseDatabase.instance.ref("users/${user.uid}");
+
+    await dbRef.update({
+      "address": fullAddress,
+      "lat": position.latitude,
+      "lng": position.longitude,
+    });
+
+    print("✅ SAVED SUCCESS");
+  } else {
+    print("❌ USER NULL → NOT SAVED");
+  }
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      bottomNavigationBar: showLocationButton
+    ? Container(
+        padding: const EdgeInsets.all(16),
+        decoration: const BoxDecoration(
+          color: Color(0xFF4361EE),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(16),
+            topRight: Radius.circular(16),
+          ),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.location_on, color: Colors.white),
+            const SizedBox(width: 10),
+            const Expanded(
+              child: Text(
+                "Location Permission is Off\nGranting location ensures accurate service",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: getLocation,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+              ),
+              child: const Text(
+                "GRANT",
+                style: TextStyle(color: Colors.black),
+              ),
+            )
+          ],
+        ),
+      )
+    : null,
       //drawer: _buildDrawer(context),
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -45,8 +205,23 @@ title: Row(
     ),
     const SizedBox(width: 6),
     Expanded(
-      child: Text(
-        '110, Near Alfa Public Scho...',
+      child: showLocationButton
+    ? GestureDetector(
+        onTap: getLocation,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          child: const Text(
+            "Enable Location",
+            style: TextStyle(
+              color: Color.fromARGB(255, 0, 0, 0),
+              fontSize: 14,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ),
+      )
+    : Text(
+        address,
         overflow: TextOverflow.ellipsis,
         style: GoogleFonts.plusJakartaSans(
           fontSize: 16,
@@ -92,7 +267,7 @@ Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: [    
               // 1. Welcome Text & Search
               const UrgencyTimerAd(),
               const SizedBox(height: 20),
