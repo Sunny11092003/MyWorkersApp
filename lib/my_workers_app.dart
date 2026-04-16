@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:my_workers_app/screens/onboarding_screen.dart';
+import 'splash_screen.dart'; // 👈 ADD THIS
 
 class MyWorkersApp extends StatelessWidget {
   const MyWorkersApp({super.key});
@@ -18,7 +18,9 @@ class MyWorkersApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.white,
       ),
       debugShowCheckedModeBanner: false,
-      home: const ProfessionalOnboardingScreen(),
+
+      // ✅ START FROM SPLASH SCREEN
+      home: const SplashScreen(),
     );
   }
 }

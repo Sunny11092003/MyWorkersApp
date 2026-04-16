@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'Signin.dart'; 
 
 class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key});
@@ -52,7 +54,7 @@ class AccountScreen extends StatelessWidget {
                   ]),
                   
                   const SizedBox(height: 32),
-                  _buildLogoutButton(),
+                  _buildLogoutButton(context),
                   
                   const SizedBox(height: 40),
                   _buildBranding(),
@@ -271,30 +273,39 @@ class AccountScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLogoutButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: TextButton(
-        onPressed: () {},
-        style: TextButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 18),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-            side: BorderSide(color: Colors.redAccent.withOpacity(0.1)),
+Widget _buildLogoutButton(BuildContext context) {
+  return SizedBox(
+    width: double.infinity,
+    child: TextButton(
+      onPressed: () async {
+        await FirebaseAuth.instance.signOut();
+
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const SignInScreen(),
           ),
-          backgroundColor: Colors.white,
+          (route) => false,
+        );
+      },
+      style: TextButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 18),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
         ),
-        child: Text(
-          "Log Out",
-          style: GoogleFonts.plusJakartaSans(
-            color: Colors.redAccent,
-            fontWeight: FontWeight.w800,
-            fontSize: 15,
-          ),
+        backgroundColor: Colors.white,
+      ),
+      child: Text(
+        "Log Out",
+        style: GoogleFonts.plusJakartaSans(
+          color: Colors.redAccent,
+          fontWeight: FontWeight.w800,
+          fontSize: 15,
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildBranding() {
     return Column(

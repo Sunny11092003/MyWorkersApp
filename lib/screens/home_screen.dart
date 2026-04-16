@@ -151,28 +151,42 @@ setState(() {
             topRight: Radius.circular(16),
           ),
         ),
-        child: Row(
-          children: [
-            const Icon(Icons.location_on, color: Colors.white),
-            const SizedBox(width: 10),
-            const Expanded(
-              child: Text(
-                "Location Permission is Off\nGranting location ensures accurate service",
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: getLocation,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-              ),
-              child: const Text(
-                "GRANT",
-                style: TextStyle(color: Colors.black),
-              ),
-            )
-          ],
-        ),
+child: Row(
+  children: [
+    const Icon(Icons.location_on, color: Colors.white),
+    const SizedBox(width: 10),
+    const Expanded(
+      child: Text(
+        "Enable location for better results.",
+        style: TextStyle(color: Colors.white),
+      ),
+    ),
+
+    // 🔥 DENY BUTTON (ADDED ONLY THIS)
+    TextButton(
+      onPressed: () {
+        setState(() {
+          showLocationButton = false;
+        });
+      },
+      child: const Text(
+        "DENY",
+        style: TextStyle(color: Colors.white),
+      ),
+    ),
+
+    ElevatedButton(
+      onPressed: getLocation,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.white,
+      ),
+      child: const Text(
+        "GRANT",
+        style: TextStyle(color: Colors.black),
+      ),
+    )
+  ],
+),
       )
     : null,
       //drawer: _buildDrawer(context),
@@ -192,11 +206,6 @@ setState(() {
   //),
 //),
 title: Row(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: [
-
-    Expanded(
-      child: Row(
   children: [
     const Icon(
       Icons.location_on_rounded,
@@ -204,39 +213,36 @@ title: Row(
       color: Color(0xFF4361EE),
     ),
     const SizedBox(width: 6),
+
+    // 👇 ONLY THIS PART IS FLEXIBLE
     Expanded(
-      child: showLocationButton
-    ? GestureDetector(
-        onTap: getLocation,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          child: const Text(
-            "Enable Location",
-            style: TextStyle(
-              color: Color.fromARGB(255, 0, 0, 0),
-              fontSize: 14,
-              fontWeight: FontWeight.w800,
+      child: GestureDetector(
+        onTap: showLocationButton ? getLocation : null,
+        child: Row(
+          mainAxisSize: MainAxisSize.min, // 🔥 IMPORTANT
+          children: [
+            Flexible(
+              child: Text(
+                showLocationButton ? "Enable Location" : address,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF111827),
+                ),
+              ),
             ),
-          ),
-        ),
-      )
-    : Text(
-        address,
-        overflow: TextOverflow.ellipsis,
-        style: GoogleFonts.plusJakartaSans(
-          fontSize: 16,
-          fontWeight: FontWeight.w800,
-          color: const Color(0xFF111827),
+
+            const SizedBox(width: 4),
+
+            const Icon(
+              Icons.keyboard_arrow_down_rounded,
+              size: 18,
+              color: Color(0xFF4361EE),
+            ),
+          ],
         ),
       ),
-    ),
-    const Icon(
-      Icons.keyboard_arrow_down_rounded,
-      size: 18,
-      color: Color(0xFF4361EE),
-    ),
-  ],
-)
     ),
   ],
 ),
