@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../widgets/home/search_bar.dart';
 import '../widgets/home/service_card.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ServicesScreen extends StatefulWidget {
   final String categoryName;
@@ -18,7 +20,41 @@ class ServicesScreen extends StatefulWidget {
 }
 
 class _ServicesScreenState extends State<ServicesScreen> {
+  List services = [];
+  bool loading = true;
   String selectedFilter = 'All';
+
+  @override
+void initState() {
+  super.initState();
+  fetchServices(); // ✅ THIS WAS MISSING
+}
+
+  Future<void> fetchServices() async {
+  try {
+    final snapshot = await FirebaseDatabase.instance.ref("services").get();
+
+    if (snapshot.exists) {
+      final data = snapshot.value as Map;
+
+      List temp = [];
+
+      data.forEach((key, value) {
+        temp.add({
+          "id": key,
+          ...value
+        });
+      });
+
+      setState(() {
+        services = temp;
+        loading = false;
+      });
+    }
+  } catch (e) {
+    print("ERROR: $e");
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -170,98 +206,26 @@ class _ServicesScreenState extends State<ServicesScreen> {
               const SizedBox(height: 16),
 
               // 5. Using the SAME ServiceCard widget as Home for visual unity
-              ServiceCard(
-                title: 'Professional Deep Home Cleaning',
-                rating: '4.9',
-                duration: '2-3 Hours',
-                price: '45.00',
-                imageUrl: 'https://techsquadteam.com/assets/profile/blogimages/9ee372ea2e007c87b293c5e5a9fea6a0.png', 
-              ),
-              ServiceCard(
-                title: 'Full House Kitchen Plumbing',
-                rating: '4.8',
-                duration: '1-2 Hours',
-                price: '30.00',
-                imageUrl: 'https://media.istockphoto.com/id/2205544490/photo/plumber-installing-water-filter-system-under-kitchen-sink.jpg?s=612x612&w=0&k=20&c=Tfo_qXb9Rcc604LBKYdD-nZBGspr7cAE45f4FEHd6Hs=',
-              ),
-              // 5. Available Services List (Expanded)
-              ServiceCard(
-                title: 'Professional Deep Home Cleaning',
-                rating: '4.9',
-                duration: '2-3 Hours',
-                price: '45.00',
-                imageUrl: 'https://harrisfac.com/nitropack_static/BnpSAdOjVbmFnIsiadoFCJikMYNtOKTH/assets/images/optimized/rev-a8092a7/harrisfac.com/wp-content/uploads/2025/08/What-Are-The-5-Cleaning-Methods-1040x693.jpg', 
-              ),
-              ServiceCard(
-                title: 'AC Deep Coil Cleaning',
-                rating: '4.7',
-                duration: '45 Mins',
-                price: '25.00',
-                imageUrl: 'https://dioncomfort.com/wp-content/uploads/2024/10/ac-repair.jpg',
-              ),
-              ServiceCard(
-                title: 'Complete Electrical Wiring Check',
-                rating: '4.9',
-                duration: '2 Hours',
-                price: '50.00',
-                imageUrl: 'https://static.wixstatic.com/media/16c2b7_5d6f7e8ef4c34a18b77aae5db6887226~mv2.jpg/v1/fill/w_860,h_459,al_c,q_85,enc_avif,quality_auto/16c2b7_5d6f7e8ef4c34a18b77aae5db6887226~mv2.jpg',
-              ),
-              ServiceCard(
-                title: 'Professional Wall Painting',
-                rating: '4.6',
-                duration: '1-2 Days',
-                price: '199.00',
-                imageUrl: 'https://jkmaxxpaints.com/wp-content/uploads/2024/08/Blog-18-How-to-Achieve-Professional-Results-When-Painting-Your-Walls-Image.jpg',
-              ),
-              ServiceCard(
-                title: 'Garden Maintenance & Mowing',
-                rating: '4.8',
-                duration: '2 Hours',
-                price: '35.00',
-                imageUrl: 'https://musthavemaintenance.com.au/wp-content/uploads/Lawn-mowing-10.jpg',
-              ),
-              ServiceCard(
-                title: 'Sofa & Upholstery Shampooing',
-                rating: '4.7',
-                duration: '1.5 Hours',
-                price: '40.00',
-                imageUrl: 'https://www.carpetbright.uk.com/wp-content/uploads/2023/11/Upholstery-Cleaning-Does-it-Make-a-Bif-Difference_.jpeg',
-              ),
-              ServiceCard(
-                title: 'Smart Home Device Installation',
-                rating: '5.0',
-                duration: '1 Hour',
-                price: '60.00',
-                imageUrl: 'https://images.unsplash.com/photo-1558002038-1055907df827?q=80&w=400',
-              ),
-              ServiceCard(
-                title: 'Pest Control (General)',
-                rating: '4.5',
-                duration: '1 Hour',
-                price: '45.00',
-                imageUrl: 'https://images.unsplash.com/photo-1600121848594-d8644e57abab?q=80&w=400',
-              ),
-              ServiceCard(
-                title: 'Microwave & Oven Repair',
-                rating: '4.7',
-                duration: '45 Mins',
-                price: '20.00',
-                imageUrl: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=400',
-              ),
-              ServiceCard(
-                title: 'Bathroom Leakage Fix',
-                rating: '4.8',
-                duration: '1 Hour',
-                price: '28.00',
-                imageUrl: 'https://images.unsplash.com/photo-1584622781564-1d987f7333c1?q=80&w=400',
-              ),
-              ServiceCard(
-                title: 'Wooden Furniture Polishing',
-                rating: '4.6',
-                duration: '3 Hours',
-                price: '75.00',
-                imageUrl: 'https://jumanji.livspace-cdn.com/magazine/wp-content/uploads/sites/2/2023/03/01002311/wood-furniture-polish.jpg',
-              ),
+loading
+  ? Column(
+      children: const [
+        ServiceCardSkeleton(),
+        ServiceCardSkeleton(),
+        ServiceCardSkeleton(),
+      ],
+    )
+  : Column(
+      children: services.map((service) {
+        return ServiceCard(
+          id: service["id"],
+          title: service["title"] ?? "",
+          rating: service["rating"]?.toString() ?? "0",
+          duration: service["duration"] ?? "",
+          price: service["price"]?.toString() ?? "0",
+          imageUrl: service["image"] ?? "",
+        );
+      }).toList(),
+    ),
               
               const SizedBox(height: 40),
             ],
@@ -461,4 +425,79 @@ Widget _buildFilterLabel(String text) {
       color: const Color(0xFF111827),
     ),
   );
+}
+
+class ServiceCardSkeleton extends StatelessWidget {
+  const ServiceCardSkeleton({super.key});
+
+  Widget _box({double height = 20, double width = double.infinity}) {
+    return Container(
+      height: height,
+      width: width,
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: Colors.grey,
+        borderRadius: BorderRadius.circular(12),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 🔹 IMAGE
+            Container(
+              height: 200,
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _box(height: 18, width: 200), // title
+                  _box(height: 14, width: 120), // subtitle
+
+                  const SizedBox(height: 10),
+
+                  Row(
+                    children: [
+                      Expanded(child: _box(height: 30)),
+                      const SizedBox(width: 8),
+                      Expanded(child: _box(height: 30)),
+                    ],
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _box(height: 20, width: 80), // price
+                      _box(height: 40, width: 100), // button
+                    ],
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
 }

@@ -9,20 +9,22 @@ class ServiceCard extends StatelessWidget {
   final String price;
   final String? imageAssetPath;
   final String? imageUrl;
+  final String id;
 
   static const Color _brandColor = Color(0xFF4361EE);
   static const Color _textMain = Color(0xFF111827); // Darker for high contrast
   static const Color _textMuted = Color(0xFF6B7280);
 
-  const ServiceCard({
-    super.key,
-    required this.title,
-    required this.rating,
-    required this.duration,
-    required this.price,
-    this.imageAssetPath,
-    this.imageUrl,
-  });
+const ServiceCard({
+  super.key,
+  required this.id, // ✅ ADD
+  required this.title,
+  required this.rating,
+  required this.duration,
+  required this.price,
+  this.imageAssetPath,
+  this.imageUrl,
+});
 
   @override
   Widget build(BuildContext context) {
@@ -242,12 +244,7 @@ void _onBookPressed(BuildContext context) {
     context,
     MaterialPageRoute(
       builder: (_) => DetailedServicesScreen(
-        title: title,
-        rating: rating,
-        duration: duration,
-        price: price,
-        // This ensures an image is ALWAYS sent, even if null
-        imageAsset: imageUrl ?? imageAssetPath ?? "https://via.placeholder.com/300",
+      serviceId: id,
       ),
     ),
   );

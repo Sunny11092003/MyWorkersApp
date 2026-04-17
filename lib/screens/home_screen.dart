@@ -12,6 +12,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:location/location.dart' as loc;
+import 'package:shimmer/shimmer.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -23,12 +24,42 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String address = "Enable Location";
   bool showLocationButton = true;
+  List services = [];
+  bool loadingServices = true;
 
 @override
 void initState() {
   super.initState();
+  fetchServices();
 }
 
+Future<void> fetchServices() async {
+  try {
+    final snapshot = await FirebaseDatabase.instance.ref("services").get();
+
+    if (snapshot.exists) {
+      final data = snapshot.value as Map;
+
+      List temp = [];
+
+      data.forEach((key, value) {
+        temp.add({
+          "id": key,
+          ...value
+        });
+      });
+
+      temp.shuffle(); // 🔥 RANDOMIZE
+
+      setState(() {
+        services = temp.take(3).toList(); // ✅ ONLY 3
+        loadingServices = false;
+      });
+    }
+  } catch (e) {
+    print("ERROR: $e");
+  }
+}
 
 Future<void> getLocation() async {
   print("🚀 LOCATION STARTED");
@@ -334,27 +365,27 @@ TextButton(
               const SizedBox(height: 12),
 
               // 5. Hero Service Cards (The nice UI taking more space)
-              const ServiceCard(
-                title: 'Professional Deep Home Cleaning',
-                rating: '4.9',
-                duration: '2-3 Hours',
-                price: '45.00',
-                imageUrl: 'https://techsquadteam.com/assets/profile/blogimages/9ee372ea2e007c87b293c5e5a9fea6a0.png', 
-              ),
-              const ServiceCard(
-                title: 'Full House Kitchen Plumbing',
-                rating: '4.8',
-                duration: '1-2 Hours',
-                price: '30.00',
-                imageUrl: 'https://media.istockphoto.com/id/2205544490/photo/plumber-installing-water-filter-system-under-kitchen-sink.jpg?s=612x612&w=0&k=20&c=Tfo_qXb9Rcc604LBKYdD-nZBGspr7cAE45f4FEHd6Hs=',
-              ),
-              const ServiceCard(
-                title: 'AC Maintenance & Repair',
-                rating: '4.7',
-                duration: '45 Mins',
-                price: '25.00',
-                imageUrl: 'https://dioncomfort.com/wp-content/uploads/2024/10/ac-repair.jpg',
-              ),
+loadingServices
+  ? Column(
+      children: const [
+        ServiceCardSkeleton(),
+        ServiceCardSkeleton(),
+        ServiceCardSkeleton(),
+      ],
+    )
+  : Column(
+      children: services.map((service) {
+        return ServiceCard(
+          id: service["id"],
+          title: service["title"] ?? "",
+          rating: service["rating"].toString(),
+          duration: service["duration"] ?? "",
+          price: service["price"].toString(),
+          imageUrl: service["image"] ?? "",
+        );
+      }).toList(),
+    ),
+
 
               // 7. Bottom spacing for navigation bar clarity
               const SizedBox(height: 40),
@@ -945,6 +976,26 @@ class PackageSection extends StatelessWidget {
           fontWeight: FontWeight.w800,
           color: const Color(0xFF10B981),
           letterSpacing: 0.5,
+        ),
+      ),
+    );
+  }
+}
+
+class ServiceCardSkeleton extends StatelessWidget {
+  const ServiceCardSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        height: 120,
+        decoration: BoxDecoration(
+          color: Colors.grey,
+          borderRadius: BorderRadius.circular(16),
         ),
       ),
     );

@@ -1,22 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'booking_screen.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:shimmer/shimmer.dart';
 
 class DetailedServicesScreen extends StatefulWidget {
-  final String title;
-  final String rating;
-  final String duration;
-  final String price;
-  final String imageAsset;
+final String serviceId;
 
-  const DetailedServicesScreen({
-    super.key,
-    required this.title,
-    required this.rating,
-    required this.duration,
-    required this.price,
-    required this.imageAsset,
-  });
+const DetailedServicesScreen({
+  super.key,
+  required this.serviceId,
+});
 
   @override
   State<DetailedServicesScreen> createState() => _DetailedServicesScreenState();
@@ -27,6 +21,31 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
   final Color _brandBlue = const Color(0xFF4361EE);
   final Color _darkText = const Color(0xFF111827);
   final Color _lightGrey = const Color(0xFFF9FAFB);
+  Map service = {};
+  bool loading = true;
+
+  @override
+void initState() {
+  super.initState();
+  fetchService();
+}
+
+Future<void> fetchService() async {
+  try {
+    final snapshot = await FirebaseDatabase.instance
+        .ref("services/${widget.serviceId}")
+        .get();
+
+    if (snapshot.exists) {
+      setState(() {
+        service = snapshot.value as Map;
+        loading = false;
+      });
+    }
+  } catch (e) {
+    print("ERROR: $e");
+  }
+}
 
   // --- STATE VARIABLES FOR BOOKING ---
   int selectedDateIndex = 0;
@@ -43,6 +62,11 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
 
   @override
   Widget build(BuildContext context) {
+if (loading) {
+  return const Scaffold(
+    body: DetailedServiceSkeleton(),
+  );
+}
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -85,7 +109,21 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
                 _buildExperienceSection(),
 
                 const SizedBox(height: 32),
-                _buildReviewsSection(),
+                _buildSectionTitle("Customer Reviews"),
+const SizedBox(height: 16),
+                ...(service["reviews"] ?? []).map<Widget>((review) {
+  return Column(
+    children: [
+      _buildReviewCard(
+        review["name"] ?? "",
+        review["rating"].toString(),
+        review["text"] ?? "",
+        review["time"] ?? "",
+      ),
+      const SizedBox(height: 12),
+    ],
+  );
+}).toList(),
               ],
             ),
           ),
@@ -211,7 +249,7 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(32),
         image: DecorationImage(
-          image: NetworkImage(widget.imageAsset),
+          image: NetworkImage(service["image"] ?? ""),
           fit: BoxFit.cover,
         ),
       ),
@@ -248,7 +286,7 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
               ),
             ),
             Text(
-              "Revitalize Your\nLiving Sanctuary",
+              service["subtitle"] ?? service["title"],
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 28,
                 fontWeight: FontWeight.w800,
@@ -262,46 +300,54 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
     );
   }
 
-  Widget _buildStatsCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: _lightGrey,
-        borderRadius: BorderRadius.circular(40),
-      ),
-      child: Row(
-        children: [
-          _buildInfoPill(Icons.access_time_filled, widget.duration, _brandBlue),
-          const SizedBox(width: 8),
-          _buildInfoPill(Icons.star_rounded, widget.rating, const Color(0xFFFFB703)),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "₹ ${widget.price}",
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w900,
-                      color: _darkText,
-                    ),
+Widget _buildStatsCard() {
+  return Container(
+    width: double.infinity,
+    padding: const EdgeInsets.all(8),
+    decoration: BoxDecoration(
+      color: _lightGrey,
+      borderRadius: BorderRadius.circular(40),
+    ),
+    child: Row(
+      children: [
+        _buildInfoPill(
+          Icons.access_time_filled,
+          service["duration"] ?? "",
+          _brandBlue,
+        ),
+        const SizedBox(width: 8),
+        _buildInfoPill(
+          Icons.star_rounded,
+          service["rating"]?.toString() ?? "0",
+          const Color(0xFFFFB703),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "₹ ${service["price"]?.toString() ?? "0"}",
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                    color: _darkText,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
 
   Widget _buildInfoPill(IconData icon, String value, Color iconColor) {
     return Container(
@@ -334,7 +380,7 @@ class _DetailedServicesScreenState extends State<DetailedServicesScreen> {
         _buildSectionTitle("Service Experience"),
         const SizedBox(height: 12),
         Text(
-          "Our signature deep cleaning service goes beyond the surface. We target hidden dust and stubborn stains using eco-friendly materials.",
+          service["description"] ?? "",
           style: GoogleFonts.plusJakartaSans(
             fontSize: 14,
             color: Colors.grey[600],
@@ -541,6 +587,118 @@ ElevatedButton(
           },
         );
       },
+    );
+  }
+}
+
+class DetailedServiceSkeleton extends StatelessWidget {
+  const DetailedServiceSkeleton({super.key});
+
+  Widget _shimmerBox({
+    double height = 20,
+    double width = double.infinity,
+    BorderRadius? radius,
+  }) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(
+        height: height,
+        width: width,
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: Colors.grey,
+          borderRadius: radius ?? BorderRadius.circular(12),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea( // ✅ FIX: prevents top sticking
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 20), // ✅ FIX: better top spacing
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+
+              const SizedBox(height: 8), // ✅ slight push down (natural feel)
+
+              // 🔹 HERO IMAGE
+              _shimmerBox(
+                height: 320,
+                radius: BorderRadius.circular(28),
+              ),
+
+              const SizedBox(height: 20),
+
+              // 🔹 TITLE + SUBTITLE
+              _shimmerBox(height: 24, width: 220),
+              _shimmerBox(height: 16, width: 150),
+
+              const SizedBox(height: 20),
+
+              // 🔹 STATS CARD
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(child: _shimmerBox(height: 40)),
+                    const SizedBox(width: 8),
+                    Expanded(child: _shimmerBox(height: 40)),
+                    const SizedBox(width: 8),
+                    Expanded(child: _shimmerBox(height: 40)),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              // 🔹 DESCRIPTION
+              _shimmerBox(height: 20, width: 180),
+              _shimmerBox(height: 14),
+              _shimmerBox(height: 14),
+              _shimmerBox(height: 14),
+
+              const SizedBox(height: 30),
+
+              // 🔹 REVIEWS
+              _shimmerBox(height: 20, width: 180),
+
+              const SizedBox(height: 16),
+
+              ...List.generate(2, (index) {
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _shimmerBox(height: 14, width: 120),
+                      _shimmerBox(height: 10, width: 80),
+                      _shimmerBox(height: 12),
+                      _shimmerBox(height: 12),
+                    ],
+                  ),
+                );
+              }),
+
+              const SizedBox(height: 100),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
