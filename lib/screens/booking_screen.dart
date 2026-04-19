@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'add_address_screen.dart';
 
 class EliteCheckoutScreen extends StatefulWidget {
   final Map service;
@@ -27,10 +29,68 @@ class _EliteCheckoutScreenState extends State<EliteCheckoutScreen> {
   final Color _surfaceGrey = const Color(0xFFF8FAFC);
   final Color _textHeading = const Color(0xFF0F172A);
   final Color _textSubtle = const Color(0xFF64748B);
+  List<Map> _addresses = [];
+  bool _hasCurrentInDB = false;
+  String _currentLocation = ""; // passed or fetched
+  String _selectedAddress = "";
 
   // State Variables
-  String _selectedAddress = "Home";
-  double _selectedTip = 20.0;
+  double _selectedTip = 0.0;
+
+Future<void> _fetchAddresses() async {
+  final user = FirebaseAuth.instance.currentUser;
+
+  if (user == null) {
+    print("User not logged in");
+    return;
+  }
+
+  final uid = user.uid;
+
+  final snapshot = await FirebaseDatabase.instance
+      .ref("users/$uid") // ✅ FIXED PATH
+      .get();
+
+  if (snapshot.exists) {
+    final data = Map<String, dynamic>.from(snapshot.value as Map);
+
+    setState(() {
+      _addresses = [];
+
+      /// ✅ CURRENT LOCATION (from DB)
+      if (data["address"] != null && data["address"] != "") {
+        _addresses.add({
+          "title": "Current Location",
+          "address": data["address"],
+        });
+
+        _hasCurrentInDB = true;
+        _selectedAddress = data["address"];
+      }
+
+      /// ✅ FUTURE (if you add saved addresses later)
+      if (data["savedAddresses"] != null) {
+        final saved = Map<String, dynamic>.from(data["savedAddresses"]);
+
+        for (var e in saved.entries) {
+          _addresses.add({
+            "title": e.value["type"] ?? "Saved",
+            "address": e.value["address"],
+          });
+        }
+      }
+    });
+  }
+}
+
+@override
+void initState() {
+  super.initState();
+
+   _currentLocation = "";// pass from Home
+
+  _fetchAddresses();
+}
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +150,26 @@ Container(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       _buildSectionLabel("SERVICE ADDRESS"),
-                      Text("+ Add New", style: TextStyle(color: _primaryBlue, fontWeight: FontWeight.bold, fontSize: 12)),
+                      GestureDetector(
+  onTap: () async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const AddAddressScreen()),
+    );
+
+    if (result == true) {
+      _fetchAddresses(); // refresh
+    }
+  },
+  child: Text(
+    "+ Add New",
+    style: TextStyle(
+      color: _primaryBlue,
+      fontWeight: FontWeight.bold,
+      fontSize: 12,
+    ),
+  ),
+),
                     ],
                   ),
                   _buildAddressSelection(),
@@ -277,7 +356,8 @@ Widget _buildServiceCard() {
                 border: Border.all(color: isSelected ? _primaryBlue : _textSubtle.withOpacity(0.1)),
               ),
               child: Center(
-                child: Text(amt == 0 ? "Other" : "₹$amt",
+                child: Text(
+                  amt == 0 ? "No Tip" : "₹$amt",
                   style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 13, color: isSelected ? Colors.white : _textHeading)),
               ),
             ),
@@ -287,21 +367,89 @@ Widget _buildServiceCard() {
     );
   }
 
-  Widget _buildAddressSelection() {
-    return Column(
-      children: [
-        const SizedBox(height: 12),
-        _addressOption("Home", "1248 Oakwood Ave, Sunset District", Icons.home_filled),
-        const SizedBox(height: 12),
-        _addressOption("Work", "Salesforce Tower, 415 Mission St", Icons.work_rounded),
-      ],
-    );
+Widget _buildAddressSelection() {
+  return Column(
+    children: [
+      const SizedBox(height: 12),
+
+      /// ✅ CASE 1 & 2 → Saved Addresses
+      if (_addresses.isNotEmpty)
+        ..._addresses.map((addr) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: _addressOption(
+              addr["title"],
+              addr["address"],
+              Icons.location_on,
+            ),
+          );
+        }).toList(),
+
+
+      /// ✅ CASE 3 → No addresses at all
+      if (_addresses.isEmpty && !_hasCurrentInDB)
+        Column(
+          children: [
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  _selectedAddress = _currentLocation;
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                margin: const EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                  color: _surfaceGrey,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  children: const [
+                    Icon(Icons.my_location),
+                    SizedBox(width: 12),
+                    Text("Use Current Location"),
+                  ],
+                ),
+              ),
+            ),
+
+            GestureDetector(
+onTap: () async {
+  final result = await Navigator.push(
+    context,
+    MaterialPageRoute(builder: (_) => const AddAddressScreen()),
+  );
+
+  if (result == true) {
+    _fetchAddresses(); // 🔥 refresh after adding
   }
+},
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: _bgWhite,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: _primaryBlue),
+                ),
+                child: Row(
+                  children: const [
+                    Icon(Icons.add),
+                    SizedBox(width: 12),
+                    Text("Add Address"),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+    ],
+  );
+}
 
   Widget _addressOption(String title, String desc, IconData icon) {
-    bool isSelected = _selectedAddress == title;
+    bool isSelected = _selectedAddress == desc;
     return GestureDetector(
-      onTap: () => setState(() => _selectedAddress = title),
+      onTap: () => setState(() => _selectedAddress = desc),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -434,14 +582,93 @@ Widget _buildPriceSummary() {
       padding: const EdgeInsets.fromLTRB(24, 20, 24, 40),
       decoration: BoxDecoration(color: _bgWhite, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 20, offset: const Offset(0, -5))]),
       child: ElevatedButton(
-        onPressed: () async {
+onPressed: () async {
   await FirebaseDatabase.instance
-      .ref("bookings/${widget.bookingId}/status")
-      .set("confirmed");
+      .ref("bookings/${widget.bookingId}")
+      .update({
+    "status": "confirmed",
+    "address": _selectedAddress,
+    "tip": _selectedTip,
+    // add this if you implemented instructions
+    // "instructions": _instructionController.text,
+  });
 
   print("BOOKING CONFIRMED");
 
-  Navigator.pop(context);
+  // ✅ Show confirmation popup (better UX)
+showDialog(
+  context: context,
+  barrierDismissible: false,
+  builder: (context) => Dialog(
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+    insetPadding: const EdgeInsets.symmetric(horizontal: 40),
+    child: Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // 1. Success Icon with a soft background
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.green.shade50,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.check_circle_rounded, color: Colors.green, size: 60),
+          ),
+          const SizedBox(height: 24),
+          
+          // 2. Title
+          const Text(
+            "Booking Confirmed",
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              letterSpacing: -0.5,
+            ),
+          ),
+          const SizedBox(height: 12),
+          
+          // 3. Description
+          Text(
+            "Your booking has been secured.\nWe'll notify you once your partner is ready.",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.grey.shade600,
+              fontSize: 15,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 32),
+          
+          // 4. Action Button
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context); // Close dialog
+                Navigator.pop(context); // Go back
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor:Color(0xFF6C63FF),// Or your primary brand color
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 0,
+              ),
+              child: const Text(
+                "Sweet!",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  ),
+);
 },
         style: ElevatedButton.styleFrom(
           backgroundColor: _primaryBlue, minimumSize: const Size(double.infinity, 56),
