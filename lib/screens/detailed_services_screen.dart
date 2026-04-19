@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'booking_screen.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:shimmer/shimmer.dart';
@@ -557,19 +558,54 @@ const SizedBox(height: 32), // Spacing before the confirm button
 
 
 ElevatedButton(
-  onPressed: () {
-    // 1. Close the bottom sheet
-    Navigator.pop(context); 
+onPressed: () async {
+  // 1. Get selected date
+  DateTime selectedDate =
+      DateTime.now().add(Duration(days: selectedDateIndex));
 
-    // 2. Navigate and pass ALL required arguments
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EliteCheckoutScreen(  // <--- ADD THIS LINE TO FIX THE ERROR
-        ),
-      ),
-    );
-  },
+  String formattedDate =
+      "${selectedDate.day}-${selectedDate.month}-${selectedDate.year}";
+
+  // 2. Create booking reference
+  DatabaseReference bookingRef =
+      FirebaseDatabase.instance.ref("bookings").push();
+
+  String bookingId = bookingRef.key!;
+
+  // 3. Create booking data (INITIATED only)
+  Map<String, dynamic> bookingData = {
+    "bookingId": bookingId,
+    "serviceId": widget.serviceId,
+    "date": formattedDate,
+    "time": selectedTime,
+    "status": "initiated",
+    "createdAt": DateTime.now().millisecondsSinceEpoch,
+  };
+
+  // 4. Save booking
+  await bookingRef.set(bookingData);
+
+  // 5. Get userId (IMPORTANT)
+  String userId = FirebaseAuth.instance.currentUser!.uid;
+
+  // 6. Save ONLY bookingId inside user
+  await FirebaseDatabase.instance
+      .ref("users/$userId/bookings/$bookingId")
+      .set(true);
+
+  print("BOOKING INITIATED");
+
+  // 7. Navigate
+  Navigator.pop(context);
+
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => EliteCheckoutScreen(),
+    ),
+  );
+},
+
   style: ElevatedButton.styleFrom(
     backgroundColor: _brandBlue,
     minimumSize: const Size(double.infinity, 56),
