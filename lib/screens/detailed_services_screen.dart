@@ -458,10 +458,11 @@ Widget _buildStatsCard() {
                         DateTime date = DateTime.now().add(Duration(days: index));
                         bool isSelected = selectedDateIndex == index;
                         return GestureDetector(
-                          onTap: () {
-                            setModalState(() => selectedDateIndex = index);
-                            setState(() => selectedDateIndex = index);
-                          },
+onTap: () {
+  setModalState(() {
+    selectedDateIndex = index;
+  });
+},
                           child: Container(
                             margin: const EdgeInsets.only(right: 12),
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -520,10 +521,11 @@ GridView.builder(
     bool isSelected = selectedTime == time;
     
     return GestureDetector(
-      onTap: () {
-        setModalState(() => selectedTime = time);
-        setState(() => selectedTime = time);
-      },
+onTap: () {
+  setModalState(() {
+    selectedTime = time;
+  });
+},
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         alignment: Alignment.center,
@@ -559,51 +561,63 @@ const SizedBox(height: 32), // Spacing before the confirm button
 
 ElevatedButton(
 onPressed: () async {
-  // 1. Get selected date
-  DateTime selectedDate =
-      DateTime.now().add(Duration(days: selectedDateIndex));
+  print("BUTTON CLICKED"); // ✅ check if button works
 
-  String formattedDate =
-      "${selectedDate.day}-${selectedDate.month}-${selectedDate.year}";
+  try {
+    DateTime selectedDate =
+        DateTime.now().add(Duration(days: selectedDateIndex));
 
-  // 2. Create booking reference
-  DatabaseReference bookingRef =
-      FirebaseDatabase.instance.ref("bookings").push();
+    String formattedDate =
+        "${selectedDate.day}-${selectedDate.month}-${selectedDate.year}";
 
-  String bookingId = bookingRef.key!;
+    DatabaseReference bookingRef =
+        FirebaseDatabase.instance.ref("bookings").push();
 
-  // 3. Create booking data (INITIATED only)
-  Map<String, dynamic> bookingData = {
-    "bookingId": bookingId,
-    "serviceId": widget.serviceId,
-    "date": formattedDate,
-    "time": selectedTime,
-    "status": "initiated",
-    "createdAt": DateTime.now().millisecondsSinceEpoch,
-  };
+    String bookingId = bookingRef.key!;
+    print("BOOKING ID: $bookingId");
 
-  // 4. Save booking
-  await bookingRef.set(bookingData);
+    Map<String, dynamic> bookingData = {
+      "bookingId": bookingId,
+      "serviceId": widget.serviceId,
+      "date": formattedDate,
+      "time": selectedTime,
+      "status": "initiated",
+      "createdAt": DateTime.now().millisecondsSinceEpoch,
+    };
 
-  // 5. Get userId (IMPORTANT)
-  String userId = FirebaseAuth.instance.currentUser!.uid;
+    await bookingRef.set(bookingData);
+    print("BOOKING SAVED");
 
-  // 6. Save ONLY bookingId inside user
-  await FirebaseDatabase.instance
-      .ref("users/$userId/bookings/$bookingId")
-      .set(true);
+    // 🔥 CHECK USER
+    if (FirebaseAuth.instance.currentUser == null) {
+      print("USER NOT LOGGED IN ❌");
+      return;
+    }
 
-  print("BOOKING INITIATED");
+    String userId = FirebaseAuth.instance.currentUser!.uid;
 
-  // 7. Navigate
-  Navigator.pop(context);
+    await FirebaseDatabase.instance
+        .ref("users/$userId/bookings/$bookingId")
+        .set(true);
 
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => EliteCheckoutScreen(),
-    ),
-  );
+    print("USER BOOKING LINKED");
+
+    Navigator.pop(context);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EliteCheckoutScreen(
+  service: service,
+  selectedDate: formattedDate,
+  selectedTime: selectedTime,
+  bookingId: bookingId,
+),
+      ),
+    );
+  } catch (e) {
+    print("ERROR OCCURRED: $e");
+  }
 },
 
   style: ElevatedButton.styleFrom(

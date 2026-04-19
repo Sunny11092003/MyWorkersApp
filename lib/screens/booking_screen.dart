@@ -1,9 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class EliteCheckoutScreen extends StatefulWidget {
-  const EliteCheckoutScreen({super.key});
+  final Map service;
+  final String selectedDate;
+  final String selectedTime;
+  final String bookingId;
 
+  const EliteCheckoutScreen({
+    super.key,
+    required this.service,
+    required this.selectedDate,
+    required this.selectedTime,
+    required this.bookingId,
+  });
+  
   @override
   State<EliteCheckoutScreen> createState() => _EliteCheckoutScreenState();
 }
@@ -37,6 +49,29 @@ class _EliteCheckoutScreenState extends State<EliteCheckoutScreen> {
                   const SizedBox(height: 12),
                   _buildSectionLabel("SELECTED SERVICE"),
                   _buildServiceCard(),
+
+                  const SizedBox(height: 16),
+
+Container(
+  padding: const EdgeInsets.all(16),
+  decoration: BoxDecoration(
+    color: _surfaceGrey,
+    borderRadius: BorderRadius.circular(16),
+  ),
+  child: Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      const Text(
+        "Scheduled",
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
+      Text(
+        "${widget.selectedDate} • ${widget.selectedTime}",
+        style: TextStyle(color: _textSubtle),
+      ),
+    ],
+  ),
+),
 
                   const SizedBox(height: 32),
                   _buildSectionLabel("OFFERS & BENEFITS"),
@@ -102,46 +137,86 @@ class _EliteCheckoutScreenState extends State<EliteCheckoutScreen> {
         fontSize: 11, fontWeight: FontWeight.w900, color: _textSubtle.withOpacity(0.6), letterSpacing: 1.1));
   }
 
-  Widget _buildServiceCard() {
-    return Container(
-      margin: const EdgeInsets.only(top: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: _bgWhite,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: _textSubtle.withOpacity(0.1)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            height: 64, width: 64,
-            decoration: BoxDecoration(
-              color: _surfaceGrey,
-              borderRadius: BorderRadius.circular(16),
-              image: const DecorationImage(image: NetworkImage("https://dioncomfort.com/wp-content/uploads/2024/10/ac-repair.jpg"), fit: BoxFit.cover),
+Widget _buildServiceCard() {
+  return Container(
+    margin: const EdgeInsets.only(top: 12),
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: _bgWhite,
+      borderRadius: BorderRadius.circular(24),
+      border: Border.all(color: _textSubtle.withOpacity(0.1)),
+    ),
+    child: Row(
+      children: [
+        Container(
+          height: 64,
+          width: 64,
+          decoration: BoxDecoration(
+            color: _surfaceGrey,
+            borderRadius: BorderRadius.circular(16),
+            image: DecorationImage(
+              image: NetworkImage(widget.service["image"] ?? ""),
+              fit: BoxFit.cover, // ✅ IMPORTANT (prevents weird stretch)
             ),
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Premium Dog Grooming", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 15, color: _textHeading)),
-                Text("Full Spa & Styling Package", style: TextStyle(color: _textSubtle, fontSize: 12)),
-                const SizedBox(height: 6),
-                Row(children: [
-                  Icon(Icons.star_rounded, color: Colors.amber[600], size: 14),
+        ),
+        const SizedBox(width: 16),
+
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.service["title"] ?? "",
+                style: GoogleFonts.plusJakartaSans(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 15,
+                  color: _textHeading,
+                ),
+              ),
+
+              Text(
+                widget.service["subtitle"] ?? "",
+                style: TextStyle(
+                  color: _textSubtle,
+                  fontSize: 12,
+                ),
+              ),
+
+              const SizedBox(height: 6),
+
+              Row(
+                children: [
+                  Icon(Icons.star_rounded,
+                      color: Colors.amber[600], size: 14),
                   const SizedBox(width: 4),
-                  const Text("4.9", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-                ])
-              ],
-            ),
+
+                  // ✅ Make rating dynamic
+                  Text(
+                    "${widget.service["rating"] ?? "0"}",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-          Text("₹1,250", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w900, fontSize: 18, color: _primaryBlue)),
-        ],
-      ),
-    );
-  }
+        ),
+
+        Text(
+          "₹${widget.service["price"] ?? 0}",
+          style: GoogleFonts.plusJakartaSans(
+            fontWeight: FontWeight.w900,
+            fontSize: 18,
+            color: _primaryBlue,
+          ),
+        ),
+      ],
+    ),
+  );
+}
 
   Widget _buildCouponSection() {
     return Container(
@@ -283,29 +358,57 @@ Widget _buildPaymentMethods() {
     );
   }
 
-  Widget _buildPriceSummary() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(color: _surfaceGrey, borderRadius: BorderRadius.circular(24)),
-      child: Column(
-        children: [
-          _priceRow("Subtotal", "₹1,250.00"),
-          _priceRow("Platform Fee", "₹25.00"),
-          _priceRow("GST (18%)", "₹225.00"),
-          if (_selectedTip > 0) _priceRow("Tip", "₹$_selectedTip"),
-          const Padding(padding: EdgeInsets.symmetric(vertical: 16), child: Divider(height: 1)),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("Total Amount", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 15)),
-              Text("₹${(1500 + _selectedTip).toStringAsFixed(0)}", 
-                style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w900, fontSize: 20, color: _textHeading)),
-            ],
-          )
-        ],
-      ),
-    );
-  }
+Widget _buildPriceSummary() {
+  double price = (widget.service["price"] ?? 0).toDouble();
+  double gst = price * 0.18;
+  double platformFee = 25;
+  double total = price + gst + platformFee + _selectedTip;
+
+  return Container(
+    padding: const EdgeInsets.all(20),
+    decoration: BoxDecoration(
+      color: _surfaceGrey,
+      borderRadius: BorderRadius.circular(24),
+    ),
+    child: Column(
+      children: [
+        _priceRow("Subtotal", "₹${price.toStringAsFixed(0)}"),
+        _priceRow("Platform Fee", "₹${platformFee.toStringAsFixed(0)}"),
+        _priceRow("GST (18%)", "₹${gst.toStringAsFixed(0)}"),
+
+        if (_selectedTip > 0)
+          _priceRow("Tip", "₹$_selectedTip"),
+
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 16),
+          child: Divider(height: 1),
+        ),
+
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Total Amount",
+              style: GoogleFonts.plusJakartaSans(
+                fontWeight: FontWeight.w800,
+                fontSize: 15,
+              ),
+            ),
+
+            Text(
+              "₹${total.toStringAsFixed(0)}",
+              style: GoogleFonts.plusJakartaSans(
+                fontWeight: FontWeight.w900,
+                fontSize: 20,
+                color: _textHeading,
+              ),
+            ),
+          ],
+        )
+      ],
+    ),
+  );
+}
 
   Widget _priceRow(String label, String val) {
     return Padding(
@@ -331,7 +434,15 @@ Widget _buildPaymentMethods() {
       padding: const EdgeInsets.fromLTRB(24, 20, 24, 40),
       decoration: BoxDecoration(color: _bgWhite, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 20, offset: const Offset(0, -5))]),
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: () async {
+  await FirebaseDatabase.instance
+      .ref("bookings/${widget.bookingId}/status")
+      .set("confirmed");
+
+  print("BOOKING CONFIRMED");
+
+  Navigator.pop(context);
+},
         style: ElevatedButton.styleFrom(
           backgroundColor: _primaryBlue, minimumSize: const Size(double.infinity, 56),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), elevation: 0),
