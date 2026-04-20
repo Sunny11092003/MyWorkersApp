@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'Signin.dart'; 
+import 'my_bookings_screen.dart';
 
 class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key});
@@ -32,7 +33,17 @@ class AccountScreen extends StatelessWidget {
                   
                   _buildSectionLabel("MY SERVICES"),
                   _buildActionGroup([
-                    _actionTile(Icons.calendar_today_rounded, "My Bookings", "Ongoing and past services"),
+                    _actionTile(
+  Icons.calendar_today_rounded,
+  "My Bookings",
+  "Ongoing and past services",
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const MyBookingsScreen()),
+    );
+  },
+),
                     _actionTile(Icons.auto_awesome_motion_rounded, "Manage Subscriptions", "Active plans", isNew: true),
                     _actionTile(Icons.wallet_giftcard_rounded, "My Rating & Reviews", "Feedback shared"),
                   ]),
@@ -227,51 +238,58 @@ class AccountScreen extends StatelessWidget {
     );
   }
 
-  Widget _actionTile(IconData icon, String title, String subtitle, {bool isNew = false}) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-      leading: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: _primaryBlue.withOpacity(0.08),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(icon, color: _primaryBlue, size: 20),
+Widget _actionTile(
+  IconData icon,
+  String title,
+  String subtitle, {
+  bool isNew = false,
+  VoidCallback? onTap, // 🔥 ADD THIS
+}) {
+  return ListTile(
+    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+    leading: Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: _primaryBlue.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(12),
       ),
-      title: Row(
-        children: [
-          Text(
-            title,
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: _textDark,
-            ),
+      child: Icon(icon, color: _primaryBlue, size: 20),
+    ),
+    title: Row(
+      children: [
+        Text(
+          title,
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: _textDark,
           ),
-          if (isNew) ...[
-            const SizedBox(width: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: const Text(
-                "NEW",
-                style: TextStyle(color: Colors.orange, fontSize: 8, fontWeight: FontWeight.bold),
-              ),
-            )
-          ]
-        ],
-      ),
-      subtitle: Text(
-        subtitle,
-        style: GoogleFonts.plusJakartaSans(fontSize: 11, color: _textLight),
-      ),
-      trailing: Icon(Icons.chevron_right_rounded, size: 18, color: _textLight.withOpacity(0.5)),
-      onTap: () {},
-    );
-  }
+        ),
+        if (isNew) ...[
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: Colors.orange.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: const Text(
+              "NEW",
+              style: TextStyle(color: Colors.orange, fontSize: 8, fontWeight: FontWeight.bold),
+            ),
+          )
+        ]
+      ],
+    ),
+    subtitle: Text(
+      subtitle,
+      style: GoogleFonts.plusJakartaSans(fontSize: 11, color: _textLight),
+    ),
+    trailing: Icon(Icons.chevron_right_rounded, size: 18, color: _textLight.withOpacity(0.5)),
+
+    onTap: onTap, // 🔥 THIS IS THE FIX
+  );
+}
 
 Widget _buildLogoutButton(BuildContext context) {
   return SizedBox(

@@ -3,6 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:geolocator/geolocator.dart';
 
 class AddAddressScreen extends StatefulWidget {
   const AddAddressScreen({super.key});
@@ -12,6 +15,7 @@ class AddAddressScreen extends StatefulWidget {
 }
 
 class _AddAddressScreenState extends State<AddAddressScreen> {
+  final MapController _mapController = MapController();
   final TextEditingController _houseController = TextEditingController();
   final TextEditingController _floorController = TextEditingController();
   final TextEditingController _buildingController = TextEditingController();
@@ -29,6 +33,101 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   final Color fieldFill = const Color(0xFFF9FAFB);
 
   String _selectedLabel = "Home";
+
+  void _showError(String msg) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text(msg)),
+  );
+}
+
+void _saveAddress() {
+  if (!_isLocationSet) {
+    _showError("Please select location on map");
+    return;
+  }
+
+  if (_houseController.text.isEmpty ||
+      _floorController.text.isEmpty ||
+      _buildingController.text.isEmpty ||
+      _landmarkController.text.isEmpty ||
+      _directionsController.text.isEmpty) {
+    _showError("All fields are required");
+    return;
+  }
+
+  _saveToFirebase();
+}
+
+Future<void> _saveToFirebase() async {
+  final user = FirebaseAuth.instance.currentUser;
+
+  if (user == null) {
+    _showError("User not logged in");
+    return;
+  }
+
+  DatabaseReference ref = FirebaseDatabase.instance
+      .ref("users/${user.uid}/saved_address")
+      .push();
+
+  await ref.set({
+    "house": _houseController.text,
+    "floor": _floorController.text,
+    "building": _buildingController.text,
+    "landmark": _landmarkController.text,
+    "directions": _directionsController.text,
+    "latitude": _selectedLocation.latitude,
+    "longitude": _selectedLocation.longitude,
+    "address": _displayAddress,
+    "label": _selectedLabel,
+    "timestamp": DateTime.now().toString(),
+  });
+
+  Navigator.pop(context);
+}
+
+
+Future<void> _getCurrentLocation() async {
+  bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    _showError("Enable location services");
+    return;
+  }
+
+  LocationPermission permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+  }
+
+  if (permission == LocationPermission.deniedForever) {
+    _showError("Location permission denied permanently");
+    return;
+  }
+
+  Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high);
+
+  LatLng current = LatLng(position.latitude, position.longitude);
+
+  setState(() => _selectedLocation = current);
+
+  _mapController.move(current, _mapController.camera.zoom);
+
+  try {
+    List<Placemark> placemarks = await placemarkFromCoordinates(
+        current.latitude, current.longitude);
+
+    if (placemarks.isNotEmpty) {
+      Placemark place = placemarks.first;
+      setState(() {
+        _displayAddress = "${place.name}, ${place.locality}";
+        _isLocationSet = true;
+      });
+    }
+  } catch (e) {
+    debugPrint(e.toString());
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +151,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
         children: [
           // 1. Full Screen Map Layer
           FlutterMap(
+            mapController: _mapController,
             options: MapOptions(
               initialCenter: _selectedLocation,
               initialZoom: 15,
@@ -148,6 +248,17 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                           ),
                         ],
                       ),
+
+                      const SizedBox(height: 10),
+
+TextButton.icon(
+  onPressed: _getCurrentLocation,
+  icon: Icon(Icons.my_location, color: primaryBlue),
+  label: Text(
+    "Use Current Location",
+    style: TextStyle(color: primaryBlue),
+  ),
+),
                       
                       const SizedBox(height: 30),
 
@@ -267,7 +378,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
       width: double.infinity,
       height: 58,
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: _saveAddress,
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryBlue,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),

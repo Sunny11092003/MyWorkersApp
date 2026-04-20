@@ -32,7 +32,8 @@ class _EliteCheckoutScreenState extends State<EliteCheckoutScreen> {
   List<Map> _addresses = [];
   bool _hasCurrentInDB = false;
   String _currentLocation = ""; // passed or fetched
-  String _selectedAddress = "";
+  Map? _selectedAddress;
+  final TextEditingController _instructionController = TextEditingController();
 
   // State Variables
   double _selectedTip = 0.0;
@@ -47,8 +48,9 @@ Future<void> _fetchAddresses() async {
 
   final uid = user.uid;
 
+  // 🔥 GET FULL USER NODE
   final snapshot = await FirebaseDatabase.instance
-      .ref("users/$uid") // ✅ FIXED PATH
+      .ref("users/$uid")
       .get();
 
   if (snapshot.exists) {
@@ -57,27 +59,38 @@ Future<void> _fetchAddresses() async {
     setState(() {
       _addresses = [];
 
-      /// ✅ CURRENT LOCATION (from DB)
+      /// ✅ 1. CURRENT ADDRESS
       if (data["address"] != null && data["address"] != "") {
-        _addresses.add({
-          "title": "Current Location",
-          "address": data["address"],
-        });
-
-        _hasCurrentInDB = true;
-        _selectedAddress = data["address"];
+_addresses.add({
+  "type": "current",
+  "title": "Current Location",
+  "address": data["address"],
+  "lat": data["lat"],
+  "lng": data["lng"],
+});
       }
 
-      /// ✅ FUTURE (if you add saved addresses later)
-      if (data["savedAddresses"] != null) {
-        final saved = Map<String, dynamic>.from(data["savedAddresses"]);
+      /// ✅ 2. SAVED ADDRESSES
+      if (data["saved_address"] != null) {
+        final saved = Map<String, dynamic>.from(data["saved_address"]);
 
-        for (var e in saved.entries) {
-          _addresses.add({
-            "title": e.value["type"] ?? "Saved",
-            "address": e.value["address"],
-          });
-        }
+        saved.forEach((key, value) {
+          final addr = Map<String, dynamic>.from(value);
+
+_addresses.add({
+  "type": "saved",
+  "id": key, // 🔥 IMPORTANT
+  "title": addr["label"] ?? "Saved",
+  "address": addr["address"] ?? "",
+  "lat": addr["latitude"],
+  "lng": addr["longitude"],
+});
+        });
+      }
+
+      /// ✅ auto select first
+      if (_addresses.isNotEmpty) {
+        _selectedAddress = _addresses[0];
       }
     });
   }
@@ -95,6 +108,7 @@ void initState() {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: _bgWhite,
       appBar: _buildAppBar(),
       body: Column(
@@ -188,9 +202,9 @@ Container(
               ),
             ),
           ),
-          _buildConfirmButton(),
         ],
       ),
+      bottomNavigationBar: _buildConfirmButton(),
     );
   }
 
@@ -320,23 +334,27 @@ Widget _buildServiceCard() {
     );
   }
 
-  Widget _buildInstructionField() {
-    return Container(
-      margin: const EdgeInsets.only(top: 12),
-      child: TextField(
-        maxLines: 2,
-        style: const TextStyle(fontSize: 13),
-        decoration: InputDecoration(
-          hintText: "Add a note for your professional...",
-          hintStyle: TextStyle(color: _textSubtle.withOpacity(0.5)),
-          filled: true,
-          fillColor: _surfaceGrey,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
-          contentPadding: const EdgeInsets.all(16),
+Widget _buildInstructionField() {
+  return Container(
+    margin: const EdgeInsets.only(top: 12),
+    child: TextField(
+      controller: _instructionController, // ✅ ADD THIS
+      maxLines: 2,
+      style: const TextStyle(fontSize: 13),
+      decoration: InputDecoration(
+        hintText: "Add a note for your professional...",
+        hintStyle: TextStyle(color: _textSubtle.withOpacity(0.5)),
+        filled: true,
+        fillColor: _surfaceGrey,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: BorderSide.none,
         ),
+        contentPadding: const EdgeInsets.all(16),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildTipSection() {
     return Container(
@@ -377,13 +395,9 @@ Widget _buildAddressSelection() {
         ..._addresses.map((addr) {
           return Padding(
             padding: const EdgeInsets.only(bottom: 12),
-            child: _addressOption(
-              addr["title"],
-              addr["address"],
-              Icons.location_on,
-            ),
+child: _addressOption(addr),
           );
-        }).toList(),
+        }),
 
 
       /// ✅ CASE 3 → No addresses at all
@@ -391,11 +405,16 @@ Widget _buildAddressSelection() {
         Column(
           children: [
             GestureDetector(
-              onTap: () {
-                setState(() {
-                  _selectedAddress = _currentLocation;
-                });
-              },
+onTap: () {
+  setState(() {
+    _selectedAddress = {
+      "type": "current",
+      "address": _currentLocation,
+      "lat": null,
+      "lng": null,
+    };
+  });
+},
               child: Container(
                 padding: const EdgeInsets.all(16),
                 margin: const EdgeInsets.only(bottom: 12),
@@ -403,13 +422,20 @@ Widget _buildAddressSelection() {
                   color: _surfaceGrey,
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Row(
-                  children: const [
-                    Icon(Icons.my_location),
-                    SizedBox(width: 12),
-                    Text("Use Current Location"),
-                  ],
-                ),
+child: Row(
+  children: [
+    Icon(Icons.my_location, color: _textHeading, size: 20),
+    const SizedBox(width: 12),
+    Text(
+      "Use Current Location",
+      style: GoogleFonts.plusJakartaSans(
+        fontWeight: FontWeight.w700,
+        fontSize: 14,
+        color: _textHeading,
+      ),
+    ),
+  ],
+),
               ),
             ),
 
@@ -431,13 +457,20 @@ onTap: () async {
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: _primaryBlue),
                 ),
-                child: Row(
-                  children: const [
-                    Icon(Icons.add),
-                    SizedBox(width: 12),
-                    Text("Add Address"),
-                  ],
-                ),
+             child: Row(
+                children: [
+                Icon(Icons.add, color: _primaryBlue, size: 20),
+                const SizedBox(width: 12),
+                Text(
+      "Add Address",
+      style: GoogleFonts.plusJakartaSans(
+        fontWeight: FontWeight.w700,
+        fontSize: 14,
+        color: _primaryBlue,
+      ),
+    ),
+  ],
+),
               ),
             ),
           ],
@@ -446,33 +479,66 @@ onTap: () async {
   );
 }
 
-  Widget _addressOption(String title, String desc, IconData icon) {
-    bool isSelected = _selectedAddress == desc;
-    return GestureDetector(
-      onTap: () => setState(() => _selectedAddress = desc),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: isSelected ? _bgWhite : _surfaceGrey,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: isSelected ? _primaryBlue : Colors.transparent, width: 2),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, color: isSelected ? _primaryBlue : _textSubtle, size: 22),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(title, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 14)),
-                Text(desc, style: TextStyle(color: _textSubtle, fontSize: 12), overflow: TextOverflow.ellipsis),
-              ]),
-            ),
-            if (isSelected) Icon(Icons.check_circle_rounded, color: _primaryBlue, size: 20),
-          ],
+Widget _addressOption(Map addr) {
+  bool isSelected = _selectedAddress == addr;
+
+  return GestureDetector(
+    onTap: () => setState(() => _selectedAddress = addr),
+    child: Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isSelected ? _bgWhite : _surfaceGrey,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isSelected ? _primaryBlue : Colors.transparent,
+          width: 2,
         ),
       ),
-    );
+      child: Row(
+        children: [
+Icon(
+  _getAddressIcon(addr),
+  color: isSelected ? _primaryBlue : _textSubtle,
+  size: 22,
+),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(addr["title"],
+                    style: GoogleFonts.plusJakartaSans(
+                        fontWeight: FontWeight.w800, fontSize: 14)),
+                Text(addr["address"],
+                    style: TextStyle(color: _textSubtle, fontSize: 12),
+                    overflow: TextOverflow.ellipsis),
+              ],
+            ),
+          ),
+          if (isSelected)
+            Icon(Icons.check_circle_rounded,
+                color: _primaryBlue, size: 20),
+        ],
+      ),
+    ),
+  );
+}
+
+IconData _getAddressIcon(Map addr) {
+  if (addr["type"] == "current") {
+    return Icons.my_location; // 📍 GPS icon
   }
+
+  String title = (addr["title"] ?? "").toString().toLowerCase();
+
+  if (title.contains("home")) {
+    return Icons.home_rounded;
+  } else if (title.contains("work") || title.contains("office")) {
+    return Icons.work_rounded;
+  } else {
+    return Icons.location_pin; // default saved
+  }
+}
 
 Widget _buildPaymentMethods() {
   return Container(
@@ -579,19 +645,30 @@ Widget _buildPriceSummary() {
 
   Widget _buildConfirmButton() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(24, 20, 24, 40),
+      padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
       decoration: BoxDecoration(color: _bgWhite, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 20, offset: const Offset(0, -5))]),
       child: ElevatedButton(
 onPressed: () async {
+
+  Map<String, dynamic> bookingData = {
+    "status": "confirmed",
+    "tip": _selectedTip,
+    "instruction": _instructionController.text,
+  };
+
+  if (_selectedAddress != null) {
+    if (_selectedAddress!["type"] == "saved") {
+      bookingData["addressId"] = _selectedAddress!["id"];
+    } else {
+      bookingData["address"] = _selectedAddress!["address"];
+      bookingData["lat"] = _selectedAddress!["lat"];
+      bookingData["lng"] = _selectedAddress!["lng"];
+    }
+  }
+
   await FirebaseDatabase.instance
       .ref("bookings/${widget.bookingId}")
-      .update({
-    "status": "confirmed",
-    "address": _selectedAddress,
-    "tip": _selectedTip,
-    // add this if you implemented instructions
-    // "instructions": _instructionController.text,
-  });
+      .update(bookingData);
 
   print("BOOKING CONFIRMED");
 
@@ -631,7 +708,7 @@ showDialog(
           
           // 3. Description
           Text(
-            "Your booking has been secured.\nWe'll notify you once your partner is ready.",
+            "Your booking is confirmed.\nOur partner will arrive at your selected date and time to assist you.",
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.grey.shade600,
@@ -650,7 +727,7 @@ showDialog(
                 Navigator.pop(context); // Go back
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor:Color(0xFF6C63FF),// Or your primary brand color
+                backgroundColor:Color(0xFF4361EE),// Or your primary brand color
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
